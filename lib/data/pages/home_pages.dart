@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    ServiceDataGet();
   }
 
   @override
@@ -86,7 +87,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 25),
                 buildCarousel(),
                 const SizedBox(height: 25),
-                RatingsAndReviews(),
+                // RatingsAndReviews(),
               ],
             ),
           ),
@@ -239,17 +240,9 @@ class _HomePageState extends State<HomePage> {
 }
 
 SizedBox lastServiceList() {
-  // Check if servicedata is empty
+  // Check if servicedata is null or empty
   if (servicedata.isEmpty) {
-    return SizedBox(
-      height: 190,
-      child: Center(
-        child: Text(
-          'No recent services available.',
-          style: TextStyle(color: Colors.grey),
-        ),
-      ),
-    );
+    return SizedBox(); // Return nothing (an empty widget)
   }
 
   return SizedBox(
@@ -259,10 +252,24 @@ SizedBox lastServiceList() {
       scrollDirection: Axis.horizontal,
       itemCount: servicedata.length,
       itemBuilder: (context, index) {
-        // Check that index is within range
+        // Make sure the index is within the valid range
         if (index >= servicedata.length) {
-          return Container(); // Or handle the case gracefully
+          return Container(); // Graceful handling for out of range
         }
+
+        // Safely retrieve data from servicedata with null checks
+        String status = servicedata[index]['status'] ?? 'unknown';
+        String selectedDate =
+            servicedata[index]['selectedDate']?.toString() ?? '';
+        String selectedTimeSlot = servicedata[index]['selectedTimeSlot'] ?? '';
+        List<dynamic> selectedService =
+            servicedata[index]["selectedService"] ?? [];
+
+        // Safely access 'selectedService[0]['title']' only if 'selectedService' is not empty
+        String serviceTitle =
+            selectedService.isNotEmpty && selectedService[0] != null
+                ? selectedService[0]['title'] ?? ''
+                : '';
 
         // Determine icon and text based on service status
         Icon statusIcon;
@@ -270,24 +277,22 @@ SizedBox lastServiceList() {
         String statusText;
         String buttonText;
 
-        // Adjust the keys here according to your actual data structure
-        String status = servicedata[index]['status'] ?? 'unknown';
-
-        if (status.toLowerCase() == 'Completed') {
-          statusIcon = Icon(Icons.check_circle, color: Colors.green);
-          iconColor = Colors.green;
-          statusText = "Completed";
-          buttonText = "Detail"; // Button text for completed status
-        } else if (status.toLowerCase() == 'Pending') {
+        if (status.toLowerCase() == 'Pending' ||
+            status.toLowerCase() == 'in progress') {
           statusIcon = Icon(Icons.pending, color: Colors.orange);
           iconColor = Colors.orange;
           statusText = "In Progress";
-          buttonText = "Track"; // Button text for in-progress status
+          buttonText = "Track";
+        } else if (status.toLowerCase() == 'Completed') {
+          statusIcon = Icon(Icons.check_circle, color: Colors.green);
+          iconColor = Colors.green;
+          statusText = "Completed";
+          buttonText = "Detail";
         } else {
           statusIcon = Icon(Icons.error, color: Colors.red);
           iconColor = Colors.red;
           statusText = "Unknown Status";
-          buttonText = "Detail"; // Default button text for unknown status
+          buttonText = "Detail";
         }
 
         return Container(
@@ -321,7 +326,7 @@ SizedBox lastServiceList() {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        daytime(servicedata[index]['selectedDate'].toString()),
+                        daytime(selectedDate),
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                           color: subText,
@@ -341,7 +346,7 @@ SizedBox lastServiceList() {
                     ],
                   ),
                   Text(
-                    servicedata[index]["selectedTimeSlot"] ?? '',
+                    selectedTimeSlot,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.poppins(
                       color: mainColor,
@@ -362,7 +367,7 @@ SizedBox lastServiceList() {
                 ),
               ),
               Text(
-                servicedata[index]["selectedService"][0]['title'] ?? '',
+                serviceTitle,
                 textAlign: TextAlign.left,
                 style: GoogleFonts.poppins(
                   color: mainColor,
@@ -371,12 +376,9 @@ SizedBox lastServiceList() {
                 ),
               ),
               const SizedBox(height: 10),
-
-              // Add the status icon here
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // SizedBox(), // Display the status icon
                   Text(
                     statusText,
                     style: GoogleFonts.poppins(
@@ -387,7 +389,6 @@ SizedBox lastServiceList() {
                   ),
                 ],
               ),
-
               Material(
                 color: index == 0 ? blueAccent : mainColor,
                 borderRadius: BorderRadius.circular(5),
@@ -395,7 +396,6 @@ SizedBox lastServiceList() {
                   splashColor: index == 0 ? mainColor : blueAccent,
                   borderRadius: BorderRadius.circular(5),
                   onTap: () {
-                    // Navigate based on button text
                     if (buttonText == "Track") {
                       Navigator.pushNamed(context, "/stepper");
                     } else {
@@ -409,7 +409,7 @@ SizedBox lastServiceList() {
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: Text(
-                      buttonText, // Use dynamic button text
+                      buttonText,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         color: Colors.white,

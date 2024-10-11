@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -18,8 +19,8 @@ Future<void> RequestDetails(
     // Wait for 5 seconds before showing the rating prompt
     await Future.delayed(Duration(seconds: 5));
 
-    // After the delay, show the emoji rating dialog
-    await showEmojiRatingDialog(context);
+    // After the delay, show the star rating dialog
+    await showStarRatingDialog(context);
   } catch (e) {
     print("exception: $e");
     ScaffoldMessenger.of(context)
@@ -27,7 +28,9 @@ Future<void> RequestDetails(
   }
 }
 
-Future<void> showEmojiRatingDialog(BuildContext context) async {
+Future<void> showStarRatingDialog(BuildContext context) async {
+  double rating = 0;
+
   return showDialog<void>(
     context: context,
     barrierDismissible: true,
@@ -37,34 +40,28 @@ Future<void> showEmojiRatingDialog(BuildContext context) async {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: Text(
-                    '😡',
-                    style: TextStyle(fontSize: 15),
-                  ),
-                  onPressed: () {
-                    print("User feedback: Very Bad");
-                    Navigator.of(dialogContext).pop();
-                  },
-                ),
-                IconButton(
-                  icon: Text('😐'), // Neutral emoji
-                  onPressed: () {
-                    print("User feedback: Neutral");
-                    Navigator.of(dialogContext).pop();
-                  },
-                ),
-                IconButton(
-                  icon: Text('😍'), // Love emoji
-                  onPressed: () {
-                    print("User feedback: Very Good");
-                    Navigator.of(dialogContext).pop();
-                  },
-                ),
-              ],
+            RatingBar.builder(
+              initialRating: 0,
+              minRating: 1,
+              allowHalfRating: true,
+              itemCount: 5,
+              itemSize: 40.0,
+              itemBuilder: (context, _) => Icon(
+                Icons.star,
+                color: Colors.amber,
+              ),
+              onRatingUpdate: (newRating) {
+                rating = newRating;
+                print("User feedback: $rating stars");
+              },
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Here you can handle the rating submission, if needed
+                Navigator.of(dialogContext).pop();
+              },
+              child: Text("Submit"),
             ),
           ],
         ),

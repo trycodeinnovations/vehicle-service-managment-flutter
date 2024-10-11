@@ -6,6 +6,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_car_service/Api_integration/Stepper.dart';
 import 'package:flutter_car_service/Authentication/SigninScreen.dart';
 import 'package:flutter_car_service/Mechanic/component/bottomnav.dart';
+import 'package:flutter_car_service/Mechanic/pages/FullTaskDetails.dart';
+import 'package:flutter_car_service/Mechanic/pages/live.dart';
 import 'package:flutter_car_service/data/pages/home_pages.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
@@ -75,6 +77,7 @@ class MyApp extends StatelessWidget {
           //     ),
           "/mechanicbottomnav": (context) => BotomMechanic(),
           "/stepper": (context) => RequestStatusStepper(),
+          "/sample": (context) => ProductListScreen(),
         },
       ),
     );

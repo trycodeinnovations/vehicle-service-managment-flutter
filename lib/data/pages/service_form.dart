@@ -28,9 +28,11 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
   String? selectedTimeSlot;
   String? selectedDeliveryType;
   bool isPickupSelected = false;
+  bool isContactSelected = true;
   bool termsAccepted = false;
   bool _isLoading = false;
   final TextEditingController pickupAddressController = TextEditingController();
+  final TextEditingController ContactController = TextEditingController();
 
   @override
   void initState() {
@@ -107,6 +109,11 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    void clearTextFields() {
+      pickupAddressController.clear();
+      ContactController.clear();
+    }
+
     return Scaffold(
         backgroundColor: bgColor,
         appBar: AppBar(
@@ -497,6 +504,51 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
                           SizedBox(
                             height: 10,
                           ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Contact Number",
+                                style: GoogleFonts.poppins(
+                                  color: Colors
+                                      .black, // Replace with your blackAccent color
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left:
+                                          8.0), // Space between Text and TextField
+                                  child: TextField(
+                                    controller:
+                                        ContactController, // Set the controller to the TextField
+                                    keyboardType: TextInputType.phone,
+                                    decoration: InputDecoration(
+                                      hintText:
+                                          'e.g. +1 234 567 8901', // Placeholder for guidance
+                                      hintStyle: GoogleFonts.poppins(
+                                        color: Colors
+                                            .grey, // Replace with your subText color
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                      border:
+                                          OutlineInputBorder(), // Add border styling
+                                      contentPadding: EdgeInsets.symmetric(
+                                          vertical: 10,
+                                          horizontal:
+                                              10), // Padding inside the TextField
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
                           Text(
                             "Delivery Type",
                             style: GoogleFonts.poppins(
@@ -640,6 +692,7 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
 
                             String? email =
                                 FirebaseAuth.instance.currentUser?.email;
+
                             Map<String, dynamic> data = {
                               'email': email,
                               "selectedService": abc,
@@ -650,6 +703,7 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
                               "pickupAddress": isPickupSelected
                                   ? pickupAddressController.text
                                   : '',
+                              "phoneNumber": ContactController.text,
                               "status": "Pending",
                               "mechanic": "not assign",
                               "cost": "estimated",
@@ -657,9 +711,11 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
 
                             // Call RequestDetails and wait for it to complete
                             await RequestDetails(context, data);
-
+                            FocusScope.of(context).unfocus();
                             // If there's additional data fetching, handle it here
                             await ServiceDataGet();
+                            clearTextFields();
+                            showSuccessAnimation(context);
 
                             setState(() {
                               _isLoading = false;
@@ -693,5 +749,47 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
                     ),
                   )
                 ]))));
+  }
+
+  void showSuccessAnimation(BuildContext context) {
+    // Create a fullscreen dialog to show the success animation
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismissing by tapping outside
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async => false, // Disable back button
+          child: Scaffold(
+            backgroundColor: Colors.black54, // Overlay color
+            body: Center(
+              child: Container(
+                color: Colors.transparent,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.green, size: 100),
+                    SizedBox(height: 20),
+                    Text(
+                      'Success!',
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    // Dismiss the dialog after 2 seconds
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.of(context).pop(); // Close the dialog
+    });
   }
 }

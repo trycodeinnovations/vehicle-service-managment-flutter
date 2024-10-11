@@ -57,7 +57,6 @@ class _ServiceDetailCard extends StatefulWidget {
 }
 
 class __ServiceDetailCardState extends State<_ServiceDetailCard> {
-  final TextEditingController _costController = TextEditingController();
   String? _selectedMechanic;
   List<String> mechanics = [];
   bool isLoading = false; // Add loading state
@@ -107,25 +106,6 @@ class __ServiceDetailCardState extends State<_ServiceDetailCard> {
                 style: GoogleFonts.poppins(
                     fontSize: 22, fontWeight: FontWeight.bold)),
             SizedBox(height: 15),
-            Text('Estimated Cost:', style: GoogleFonts.poppins(fontSize: 18)),
-            TextField(
-              controller: _costController,
-              decoration: InputDecoration(
-                labelText: 'Enter estimated cost',
-                labelStyle: TextStyle(color: Colors.blueGrey[600]),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.blueGrey, width: 2),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 20),
             Text('Assign Mechanic:', style: GoogleFonts.poppins(fontSize: 18)),
             DropdownButton<String>(
               value: _selectedMechanic,
@@ -148,8 +128,7 @@ class __ServiceDetailCardState extends State<_ServiceDetailCard> {
               onPressed: isLoading
                   ? null
                   : () async {
-                      if (_selectedMechanic != null &&
-                          _costController.text.isNotEmpty) {
+                      if (_selectedMechanic != null) {
                         setState(() {
                           isLoading = true; // Set loading to true
                         });
@@ -163,8 +142,6 @@ class __ServiceDetailCardState extends State<_ServiceDetailCard> {
                               .update({
                             'status': 'in progress',
                             'mechanic': _selectedMechanic,
-                            'cost':
-                                double.tryParse(_costController.text) ?? 0.0,
                           });
 
                           // Show confirmation message as a quick alert
@@ -187,7 +164,7 @@ class __ServiceDetailCardState extends State<_ServiceDetailCard> {
                         }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Please fill all fields.')),
+                          SnackBar(content: Text('Please select a mechanic.')),
                         );
                       }
                     },
@@ -204,11 +181,11 @@ class __ServiceDetailCardState extends State<_ServiceDetailCard> {
               ),
             ),
             SizedBox(height: 20),
-            if (_selectedMechanic != null && _costController.text.isNotEmpty)
+            if (_selectedMechanic != null)
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Assigned Mechanic: $_selectedMechanic\nEstimated Cost: \$${_costController.text}',
+                  'Assigned Mechanic: $_selectedMechanic',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),

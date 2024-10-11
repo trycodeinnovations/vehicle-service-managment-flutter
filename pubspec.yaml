@@ -17,7 +17,7 @@ dependencies:
   cached_network_image: ^3.2.0
   flutter_rating_bar: ^4.0.1
   animations: ^2.0.11
-  url_launcher: ^6.3.0
+  url_launcher: ^6.0.20
   flutter_datetime_picker: ^1.5.1
   intl: ^0.19.0  # Specify version
   icons_plus: ^5.0.0
@@ -45,7 +45,12 @@ dependencies:
   google_sign_in: ^6.2.1
   in_app_review:
   another_stepper: 
-  
+  permission_handler: 
+  awesome_notifications:
+  pdf: ^3.6.2
+  printing: ^5.7.2
+  flutter_pdfview: ^1.0.0
+
   
 
 dev_dependencies:

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_car_service/Mechanic/pages/Assignedscreen.dart'; // Ensure this import points to your AssignedTasksScreen
+import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
+import 'package:flutter_car_service/Mechanic/pages/Assignedscreen.dart';
 import 'package:flutter_car_service/style/color.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:quickalert/quickalert.dart';
 
 class MechanicHomePage extends StatelessWidget {
   @override
@@ -10,8 +13,8 @@ class MechanicHomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Assigned Work"),
-      ),
+          // title: Text("Assigned Work"),
+          ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.045),
         child: Column(
@@ -46,54 +49,78 @@ class MechanicHomePage extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CircleAvatar(
-                  radius: 20,
-                ),
-                // Uncomment and replace with actual image URL
-                // Image.network(
-                //   profileData['imageurl'] ?? 'https://via.placeholder.com/40',
-                //   width: 40,
-                //   fit: BoxFit.cover,
-                // ),
-                const SizedBox(width: 15),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    // Uncomment and replace with actual name
-                    // Text(
-                    //   profileData['name'] ?? 'No Name',
-                    //   style: GoogleFonts.poppins(
-                    //     color: Colors.black,
-                    //     fontSize: 15,
-                    //     fontWeight: FontWeight.w700,
-                    //   ),
-                    // ),
-                    Text(
-                      "Sr Mechanic ",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w400,
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundImage: NetworkImage(
+                        currentlogindata['imageUrl'] ?? 'img',
                       ),
+                    ),
+                    const SizedBox(width: 15),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          currentlogindata['name'] ?? 'No Name',
+                          style: GoogleFonts.poppins(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Text(
+                          "Sr Mechanic",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.poppins(
+                            color: Colors.grey,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
+                IconButton(
+                  icon: Icon(
+                    Icons.logout,
+                    color: subText, // Set the color for the logout icon
+                    size: 25,
+                  ),
+                  onPressed: () {
+                    _showLogoutConfirmationDialog(context);
+                  },
+                ),
               ],
             ),
-            Icon(
-              Icons.notifications_outlined,
-              color: subText,
-              size: 30,
-            ),
+            const SizedBox(height: 10),
+            // Remove the ElevatedButton for Logout, as we are using the icon instead
           ],
         ),
       ),
+    );
+  }
+
+  void _showLogoutConfirmationDialog(BuildContext context) {
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.warning,
+      title: "Logout",
+      text: "Are you sure you want to logout?",
+      confirmBtnText: "Yes",
+      cancelBtnText: "No",
+      onConfirmBtnTap: () {
+        // Perform the logout action here
+        // For example, clear user session or navigate to the login screen
+        Navigator.of(context)
+            .pushReplacementNamed('/signin'); // Adjust navigation as needed
+      },
     );
   }
 
@@ -171,39 +198,78 @@ class MechanicHomePage extends StatelessWidget {
               MaterialPageRoute(builder: (context) => AssignedTasksScreen()),
             );
           }),
-          Container(
-            height: size.height * 0.25,
-            child: ListView(
-              children: [
-                _buildTaskCard("Oil Change", "Due: Today",
-                    "assets/logo/oil_categories.png"),
-                _buildTaskCard("Brake Repair", "Due: Tomorrow",
-                    "assets/logo/oil_categories.png"),
-                _buildTaskCard("Tire Rotation", "Due: In 2 days",
-                    "assets/logo/oil_categories.png"),
-              ],
-            ),
+          FutureBuilder<QuerySnapshot>(
+            future: FirebaseFirestore.instance
+                .collection("serviceReqDetails")
+                .where("status", isEqualTo: "in progress")
+                .where("mechanic", isEqualTo: currentlogindata["name"])
+                .get(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Center(child: Text('No assigned tasks.'));
+              }
+
+              return Container(
+                height: size.height * 0.25,
+                child: ListView.builder(
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    var task = snapshot.data!.docs[index];
+                    return _buildTaskCard(
+                      task['email'] ?? 'N/A',
+                      task['selectedDate']?.toString().split(' ')[0] ?? 'N/A',
+                      task['email'], // Use email to fetch user image
+                    );
+                  },
+                ),
+              );
+            },
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTaskCard(String title, String subtitle, String imgPath) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        leading: Image.asset(imgPath, width: 50, height: 50),
-        title: Text(title),
-        subtitle: Text(subtitle),
-        trailing: Icon(
-          Icons.arrow_forward_ios,
-          size: 15,
-        ),
-        onTap: () {
-          // Handle task details
-        },
-      ),
+  Widget _buildTaskCard(String email, String date, String userEmail) {
+    return FutureBuilder<DocumentSnapshot>(
+      future:
+          FirebaseFirestore.instance.collection("users").doc(userEmail).get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error fetching user image.'));
+        }
+
+        var userData = snapshot.data;
+        String imgPath = userData != null && userData.exists
+            ? userData['imageurl'] ??
+                'default_image_url' // Replace with your default image URL
+            : 'default_image_url'; // Fallback image if user not found
+
+        return Card(
+          margin: EdgeInsets.symmetric(vertical: 8),
+          child: ListTile(
+            leading: CircleAvatar(
+              radius: 20,
+              backgroundImage: NetworkImage(imgPath),
+            ),
+            title: Text(email),
+            subtitle: Text('Date: $date'),
+            trailing: Icon(Icons.arrow_forward_ios, size: 15),
+            onTap: () {
+              // Handle task details navigation
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -230,5 +296,3 @@ class MechanicHomePage extends StatelessWidget {
     );
   }
 }
-
-// Note: Don't forget to define the AssignedTasksScreen in your app.

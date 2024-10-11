@@ -6,6 +6,7 @@ import 'package:flutter_car_service/Api_integration/AdminServiceFet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
 import 'package:flutter_car_service/Api_integration/TotalMechanicApi.dart';
+import 'package:flutter_car_service/style/color.dart';
 import 'package:quickalert/quickalert.dart';
 
 class AdminDashboard extends StatefulWidget {
@@ -39,6 +40,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
   ];
 
   int _selectedIndex = 0;
+
+  // List of screens corresponding to each BottomNavigationBar item
+  final List<Widget> _screens = [
+    AdminDashboard(
+      title: '',
+      mainColor: mainColor,
+    ), // Implement this screen
+    AddMechanicScreen(), // Mechanic Management Screen
+    ServiceRequestScreen(), // Service Request Screen
+
+    // SettingsScreen(), // Settings Screen
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -142,7 +155,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         physics: NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 1.5,
+          childAspectRatio: 1.3,
           crossAxisSpacing: 16.0,
           mainAxisSpacing: 16.0,
         ),
@@ -226,12 +239,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   Widget _buildDrawerHeader() {
     return UserAccountsDrawerHeader(
-      accountName: Text("Admin Name"),
-      accountEmail: Text("admin@example.com"),
+      accountName: Text(currentlogindata["name"]),
+      accountEmail: Text(currentlogindata["email"]),
       currentAccountPicture: CircleAvatar(
         backgroundColor: Colors.white,
         child: Text(
-          "A",
+          currentlogindata["name"][0],
           style: TextStyle(color: widget.mainColor, fontSize: 40),
         ),
       ),
@@ -246,7 +259,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
         BottomNavigationBarItem(icon: Icon(Icons.build), label: 'Mechanics'),
         BottomNavigationBarItem(
             icon: Icon(Icons.assignment), label: 'Requests'),
-        BottomNavigationBarItem(icon: Icon(Icons.report), label: 'Reports'),
         BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
       ],
       currentIndex: _selectedIndex,

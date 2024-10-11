@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Api_integration/Googlelogin.dart';
 import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
+
 import 'package:flutter_car_service/Api_integration/ProfileGet.dart';
+import 'package:flutter_car_service/Api_integration/ServicedetailsGet.dart';
 import 'package:flutter_car_service/Api_integration/ushNotification.dart';
 import 'package:flutter_car_service/Authentication/Constants.dart';
 import 'package:flutter_car_service/Authentication/ForgetPasswordScreen.dart';
@@ -199,6 +201,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               onTap: () {
                                 Login(context, emailController.text,
                                     passwordController.text);
+                                ServiceDataGet();
                               },
                               child: Container(
                                 width: double.infinity,

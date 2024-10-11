@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Api_integration/ProfileGet.dart';
 import 'package:flutter_car_service/Api_integration/Stepper.dart';
+import 'package:flutter_car_service/Mechanic/pages/pdf.dart';
 import 'package:flutter_car_service/data/pages/HelpScreen.dart';
 import 'package:flutter_car_service/data/pages/Myaccountscreen.dart';
 import 'package:flutter_car_service/data/pages/Navigation.dart';
@@ -141,7 +142,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AppRatingPage(),
+                builder: (context) => TaskDetailsScreen(
+                  userEmail: '',
+                ),
               ),
             );
           }),

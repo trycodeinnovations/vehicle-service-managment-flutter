@@ -8,6 +8,9 @@ class AppRatingPage extends StatefulWidget {
 }
 
 class _AppRatingPageState extends State<AppRatingPage> {
+  double _rating = 0.0; // For star rating
+  final _feedbackController = TextEditingController(); // For feedback text
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +27,8 @@ class _AppRatingPageState extends State<AppRatingPage> {
           },
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
+        // Add this line
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -55,18 +59,57 @@ class _AppRatingPageState extends State<AppRatingPage> {
               ),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                _showCustomEmojiFeedbackDialog(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: mainColor,
+            Text(
+              'Rate your experience:',
+              style: GoogleFonts.poppins(fontSize: 16),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (index) {
+                return IconButton(
+                  icon: Icon(
+                    index < _rating ? Icons.star : Icons.star_border,
+                    color: Colors.orange,
+                    size: 36,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _rating = index + 1.0; // Set the rating
+                    });
+                  },
+                );
+              }),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Leave us a message:',
+              style: GoogleFonts.poppins(fontSize: 16),
+            ),
+            SizedBox(height: 8),
+            TextField(
+              controller: _feedbackController,
+              maxLines: 4,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Type your feedback here...',
               ),
-              child: Text(
-                'Rate Now',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: Colors.white,
+            ),
+            SizedBox(height: 16),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  final feedback = _feedbackController.text;
+                  _handleFeedback(feedback);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: mainColor,
+                ),
+                child: Text(
+                  'Submit Feedback',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
@@ -76,93 +119,8 @@ class _AppRatingPageState extends State<AppRatingPage> {
     );
   }
 
-  void _showCustomEmojiFeedbackDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            'Rate this app',
-            style: GoogleFonts.poppins(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Please select an emoji to rate our app.',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                ),
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Column(
-                    children: [
-                      IconButton(
-                        icon: Text('😠', style: TextStyle(fontSize: 30)),
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
-                          _handleFeedback('Very Bad');
-                        },
-                      ),
-                      Text(
-                        'Very Bad',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      IconButton(
-                        icon: Text('😐', style: TextStyle(fontSize: 30)),
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
-                          _handleFeedback('Neutral');
-                        },
-                      ),
-                      Text(
-                        'Neutral',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      IconButton(
-                        icon: Text('😍', style: TextStyle(fontSize: 30)),
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
-                          _handleFeedback('Excellent');
-                        },
-                      ),
-                      Text(
-                        'Excellent',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   void _handleFeedback(String feedback) {
-    print('User feedback: $feedback');
+    print('User feedback: $_rating stars, Feedback: $feedback');
 
     // Show thank you message
     ScaffoldMessenger.of(context).showSnackBar(
@@ -178,7 +136,7 @@ class _AppRatingPageState extends State<AppRatingPage> {
       ),
     );
 
-    // Navigate back to the homepage
+    // Optionally, navigate back or reset the form
     Future.delayed(Duration(seconds: 2), () {
       Navigator.of(context).pushReplacementNamed("/bottom");
     });
