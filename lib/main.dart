@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,10 @@ import 'package:flutter_car_service/Authentication/SigninScreen.dart';
 import 'package:flutter_car_service/Mechanic/component/bottomnav.dart';
 import 'package:flutter_car_service/Mechanic/pages/FullTaskDetails.dart';
 import 'package:flutter_car_service/Mechanic/pages/live.dart';
-import 'package:flutter_car_service/data/pages/home_pages.dart';
+import 'package:flutter_car_service/User/data/pages/home_pages.dart';
+import 'package:flutter_car_service/User/data/pages/paymentscreen.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 
@@ -18,8 +22,8 @@ import 'Admin/Pages/Adminhomepage.dart';
 import 'Admin/Pages/ServiceDetails.dart';
 import 'Mechanic/pages/Homepage.dart';
 
-import 'component/bottom_nav.dart';
-import 'data/pages/splashscreen.dart';
+import 'User/component/bottom_nav.dart';
+import 'User/data/pages/splashscreen.dart';
 import 'style/color.dart';
 
 void main() async {
@@ -30,22 +34,28 @@ void main() async {
   // final fcmToken = await FirebaseMessaging.instance.getToken();
   // print("FCM Token: $fcmToken"); // Uncomment for debugging
 
-  // AwesomeNotifications().initialize(
-  //   'resourceKey', // Specify a resource key
-  //   [
-  //     NotificationChannel(
-  //       channelKey: 'basic',
-  //       channelName: 'Basic Notification',
-  //       channelDescription: 'Notification for basic alerts',
-  //     ),
-  //   ],
-  //   debug: true,
-  // );
-  // } catch (e) {
-  //   print("Error initializing Firebase: $e");
-  // }
+  AwesomeNotifications().initialize(
+    'resourceKey', // Specify a resource key
+    [
+      NotificationChannel(
+        channelKey: 'basic',
+        channelName: 'Basic Notification',
+        channelDescription: 'Notification for basic alerts',
+      ),
+    ],
+    debug: true,
+  );
 
   runApp(const MyApp());
+} // Declare a global notification plugin instance
+
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+Future<void> _initializeNotifications() async {
+  // Initialization settings for Android
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 }
 
 class MyApp extends StatelessWidget {
@@ -70,14 +80,11 @@ class MyApp extends StatelessWidget {
                 mainColor: mainColor,
               ),
           "/bottom": (context) => BottomNav(),
+          // "/paymentScreen": (context) => PaymentMethodScreen(cost: ,),
           "/signin": (context) => SignInScreen(),
           "/addmechanic": (context) => AddMechanicScreen(),
-          // "/allserviceDetails": (context) => ServiceDetailsScreen(
-          //       service: context,
-          //     ),
           "/mechanicbottomnav": (context) => BotomMechanic(),
           "/stepper": (context) => RequestStatusStepper(),
-          "/sample": (context) => ProductListScreen(),
         },
       ),
     );

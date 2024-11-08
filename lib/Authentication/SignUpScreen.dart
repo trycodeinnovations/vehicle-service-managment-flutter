@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Api_integration/RegisterAPI.dart';
 import 'package:flutter_car_service/Authentication/SigninScreen.dart';
-import 'package:flutter_car_service/Widgets/customScafold.dart';
+import 'package:flutter_car_service/User/Widgets/customScafold.dart';
+
 import 'package:flutter_car_service/style/color.dart'; // Assuming this is where you define colors
 import 'package:icons_plus/icons_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -47,6 +48,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _image = File(pickedFile.path);
       });
     }
+  }
+
+  // Validator for Car Number
+  String? _validateCarNumber(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter car number';
+    }
+    // Regular expression for validating car registration number
+    final regex = RegExp(r'^[A-Z]{2}\d{3}[A-Z]{2}$');
+    if (!regex.hasMatch(value)) {
+      return 'Enter a valid car number (e.g., AB123CD)';
+    }
+    return null;
   }
 
   @override
@@ -142,6 +156,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         controller: _carNumberController,
                         label: 'Enter Car Number',
                         hintText: 'Enter Car Number',
+                        validator: _validateCarNumber, // Car number validation
                       ),
                       const SizedBox(height: 20.0),
                       Row(
@@ -195,7 +210,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               "name": _fullNameController.text,
                               "email": _emailController.text,
                               "car name": _carNameController.text,
-                              "reg number":_carNumberController.text
+                              "reg number": _carNumberController.text
                             };
                             Register(context, _emailController.text,
                                 _passwordController.text, data, _image);
@@ -286,7 +301,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20.0),
                     ],
                   ),
                 ),
@@ -298,39 +312,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+  // A custom TextFormField widget for reusable input fields
   Widget _buildTextFormField({
     required TextEditingController controller,
     required String label,
     required String hintText,
     bool obscureText = false,
+    FormFieldValidator<String>? validator,
   }) {
     return TextFormField(
-      controller: controller, // Set the controller
+      controller: controller,
       obscureText: obscureText,
-      obscuringCharacter: '*',
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter $label';
-        }
-        return null;
-      },
+      validator: validator,
       decoration: InputDecoration(
         labelText: label,
         hintText: hintText,
-        hintStyle: GoogleFonts.poppins(
-          color: Colors.black26,
-        ),
         border: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Colors.black12,
-          ),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Colors.black12,
-          ),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(15),
         ),
       ),
     );

@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Admin/Pages/AddMechanicScreen.dart';
+import 'package:flutter_car_service/Admin/Pages/CategoriesAdd.dart';
 import 'package:flutter_car_service/Admin/Pages/TotalMechanics.dart';
 import 'package:flutter_car_service/Admin/Pages/ServiceRequestScreen.dart';
+// New Page
+import 'package:flutter_car_service/Admin/Pages/finishedRequst.dart';
+import 'package:flutter_car_service/Admin/Pages/totalrequest.dart';
 import 'package:flutter_car_service/Api_integration/AdminServiceFet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
 import 'package:flutter_car_service/Api_integration/TotalMechanicApi.dart';
 import 'package:flutter_car_service/style/color.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminDashboard extends StatefulWidget {
   AdminDashboard({Key? key, required this.title, required this.mainColor})
@@ -36,22 +41,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   final List<Map<String, dynamic>> stats2 = [
     {'icon': Icons.grid_view, 'title': 'Total Services'},
-    {'icon': Icons.file_copy, 'title': 'Finished Request'},
+    {'icon': Icons.file_copy, 'title': 'Finished Requests'},
   ];
 
   int _selectedIndex = 0;
-
-  // List of screens corresponding to each BottomNavigationBar item
-  final List<Widget> _screens = [
-    AdminDashboard(
-      title: '',
-      mainColor: mainColor,
-    ), // Implement this screen
-    AddMechanicScreen(), // Mechanic Management Screen
-    ServiceRequestScreen(), // Service Request Screen
-
-    // SettingsScreen(), // Settings Screen
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -60,6 +53,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   Future<void> _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
     QuickAlert.show(
       context: context,
       type: QuickAlertType.confirm,
@@ -162,12 +157,32 @@ class _AdminDashboardState extends State<AdminDashboard> {
         itemCount: stats.length,
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () async {
+            onTap: () {
               if (stats[index]['title'] == 'Total Mechanics') {
-                await TotalMechanics();
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => MechanicProfileScreen(),
-                ));
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => MechanicProfileScreen()),
+                );
+              } else if (stats[index]['title'] == 'Finished Request') {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => FinishedRequestsScreen(),
+                  ),
+                );
+              } else if (stats[index]['title'] == 'Total Services') {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        RequestsScreen(), // New Screen for Request View
+                  ),
+                );
+              } else if (stats[index]['title'] == 'Total Categories') {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ServiceFetchScreen(), // New Screen for Request View
+                  ),
+                );
               }
             },
             child: _buildStatCard(
@@ -275,15 +290,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
       leading: Icon(icon, color: widget.mainColor),
       title: Text(title),
       onTap: () {
-        AdminServiceDataGet();
         if (title == 'Service Request') {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => ServiceRequestScreen(),
-          ));
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ServiceRequestScreen(),
+            ),
+          );
         } else if (title == 'Mechanic Management') {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => AddMechanicScreen(),
-          ));
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => AddMechanicScreen(),
+            ),
+          );
         }
       },
     );

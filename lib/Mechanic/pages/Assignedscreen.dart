@@ -89,6 +89,7 @@ class _AssignedTasksScreenState extends State<AssignedTasksScreen> {
                         task['selectedDate']?.toString().split(' ')[0] ?? 'N/A',
                         task['selectedTimeSlot']?.toString() ?? 'N/A',
                         task['phoneNumber'] ?? 'N/A',
+                        task['userissue'] ?? 'N/A',
                       );
                     },
                   );
@@ -99,7 +100,7 @@ class _AssignedTasksScreenState extends State<AssignedTasksScreen> {
   }
 
   Widget _buildTaskCard(String userImage, String userName, String email,
-      String date, String timeSlot, String phoneNumber) {
+      String date, String timeSlot, String phoneNumber, String userissue) {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8),
       elevation: 4,
@@ -150,6 +151,14 @@ class _AssignedTasksScreenState extends State<AssignedTasksScreen> {
                 color: Colors.grey[600],
               ),
             ),
+            SizedBox(height: 6),
+            Text(
+              'User issue: $userissue',
+              style: TextStyle(
+                fontSize: 12, // Smaller font size
+                color: Colors.grey[600],
+              ),
+            ),
             SizedBox(height: 8),
             Row(
               children: [
@@ -175,13 +184,13 @@ class _AssignedTasksScreenState extends State<AssignedTasksScreen> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => TaskDetailsScreen(
-                                    userImage: userImage,
-                                    userName: userName,
-                                    email: email,
-                                    date: date,
-                                    timeSlot: timeSlot,
-                                    phoneNumber: phoneNumber,
-                                  )));
+                                  userImage: userImage,
+                                  userName: userName,
+                                  email: email,
+                                  date: date,
+                                  timeSlot: timeSlot,
+                                  phoneNumber: phoneNumber,
+                                  userissue: userissue,)));
                     },
                     icon: Icon(Icons.arrow_forward_ios, size: 15))),
           ],

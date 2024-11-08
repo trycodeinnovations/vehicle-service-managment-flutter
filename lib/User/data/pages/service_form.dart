@@ -6,12 +6,15 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_car_service/Api_integration/ProfileGet.dart';
 import 'package:flutter_car_service/Api_integration/RequestData.dart';
 import 'package:flutter_car_service/Api_integration/ServicedetailsGet.dart';
-import 'package:flutter_car_service/data/pages/Termsandcondition.dart';
-import 'package:flutter_car_service/data/pages/submissionscreen.dart';
-import 'package:flutter_car_service/data/service.dart';
+import 'package:flutter_car_service/Api_integration/Stepper.dart';
+import 'package:flutter_car_service/User/data/pages/Termsandcondition.dart';
+import 'package:flutter_car_service/User/data/pages/submissionscreen.dart';
+import 'package:flutter_car_service/User/data/service.dart';
+import 'package:flutter_car_service/main.dart';
 import 'package:flutter_car_service/models/service_models.dart';
 
 import 'package:flutter_car_service/style/color.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ServiceFormPage extends StatefulWidget {
@@ -33,7 +36,7 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
   bool _isLoading = false;
   final TextEditingController pickupAddressController = TextEditingController();
   final TextEditingController ContactController = TextEditingController();
-
+  final TextEditingController serviceController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -44,6 +47,28 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
     // serviceDataForm = serviceItemsData;
     print(serviceItemsData.length);
     selectedDate = DateTime.now();
+  }
+
+  Future<void> _showRequestSubmittedNotification() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'request_status_channel', // Channel ID
+      'Request Status Notifications', // Channel name
+      channelDescription: 'Notifications for request status updates',
+      importance: Importance.high,
+      priority: Priority.high,
+      showWhen: false,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0, // Notification ID
+      'Request Submitted',
+      'Your request has been successfully submitted!',
+      platformChannelSpecifics,
+    );
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -82,22 +107,6 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
         ),
       );
     } else {
-      // Navigate to the SubmissionScreen
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => SubmissionScreen(
-      //       selectedService: selectedService,
-      //       selectedTimeSlot: selectedTimeSlot,
-      //       selectedDeliveryType: selectedDeliveryType,
-      //       selectedDate: selectedDate,
-      //       isPickupSelected: isPickupSelected,
-      //       pickupAddress: isPickupSelected ? pickupAddressController.text : '',
-      //     ),
-      //   ),
-      // );
-
-      // Show a confirmation SnackBar message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Details submitted successfully!"),
@@ -112,6 +121,7 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
     void clearTextFields() {
       pickupAddressController.clear();
       ContactController.clear();
+      serviceController.clear();
     }
 
     return Scaffold(
@@ -119,9 +129,10 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: Icon(
-            Icons.arrow_back_ios_new_rounded,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios_new_rounded),
             color: blackAccent,
+            onPressed: () {},
           ),
           title: Text(
             "Service Form",
@@ -623,6 +634,51 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
                               ),
                             ),
                           ],
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Service Detail",
+                                style: GoogleFonts.poppins(
+                                  color: Colors
+                                      .black, // Replace with your blackAccent color
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left:
+                                          8.0), // Space between Text and TextField
+                                  child: TextField(
+                                    controller:
+                                        serviceController, // Set the controller for capturing input
+                                    keyboardType: TextInputType
+                                        .text, // Allow typing any text related to service
+                                    maxLines:
+                                        null, // Allow multiple lines for detailed input
+                                    decoration: InputDecoration(
+                                      hintText:
+                                          'Optional: Describe the service or issue ', // Placeholder for guidance
+                                      hintStyle: GoogleFonts.poppins(
+                                        color: Colors
+                                            .grey, // Replace with your subText color
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                      border:
+                                          OutlineInputBorder(), // Add border styling
+                                      contentPadding: EdgeInsets.symmetric(
+                                        vertical: 10,
+                                        horizontal: 10,
+                                      ), // Padding inside the TextField
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                           SizedBox(
                             height: 10,
                           ),
@@ -707,6 +763,7 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
                               "status": "Pending",
                               "mechanic": "not assign",
                               "cost": "estimated",
+                              "userissue": serviceController.text,
                             };
 
                             // Call RequestDetails and wait for it to complete
@@ -716,6 +773,7 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
                             await ServiceDataGet();
                             clearTextFields();
                             showSuccessAnimation(context);
+                            _showRequestSubmittedNotification();
 
                             setState(() {
                               _isLoading = false;

@@ -1,9 +1,12 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_car_service/Admin/Pages/Adminhomepage.dart';
+import 'package:flutter_car_service/Mechanic/component/bottomnav.dart';
+import 'package:flutter_car_service/User/component/bottom_nav.dart';
 
-import 'package:flutter_car_service/data/pages/get_started.dart';
+import 'package:flutter_car_service/User/data/pages/get_started.dart';
 import 'package:flutter_car_service/style/color.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -46,9 +49,36 @@ class _SplashScreenState extends State<SplashScreen>
     _animationController.forward();
 
     // Navigate to the GetStarted screen after a delay
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 5), () async {
+      // SharedPreferences prefs = await SharedPreferences.getInstance();
+      // String? userRole = prefs.getString('userType');
+      // if (userRole == 'admin') {
+      //   // Navigate to the Admin Home Page
+
+      //   Navigator.of(context).pushReplacement(
+      //     MaterialPageRoute(
+      //         builder: (context) => AdminDashboard(
+      //               title: "",
+      //               mainColor: mainColor,
+      //             )), // Replace with your actual admin home page
+      //   );
+      // } else if (userRole == 'mechanics') {
+      //   // Navigate to the Mechanic Home Page
+      //   Navigator.of(context).pushReplacement(
+      //     MaterialPageRoute(
+      //         builder: (context) =>
+      //             BotomMechanic()), // Replace with your actual mechanic home page
+      //   );
+      // } else if (userRole == 'users') {
+      //   // Navigate to the Mechanic Home Page
+      //   Navigator.of(context).pushReplacement(
+      //     MaterialPageRoute(builder: (context) => BottomNav()),
+      //     // Replace with your actual mechanic home page
+      //   );
+      // } else {
+      // If not logged in or role is not recognized, navigate to the GetStarted page
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const GetStarted()),
+        MaterialPageRoute(builder: (context) => GetStarted()),
       );
     });
   }

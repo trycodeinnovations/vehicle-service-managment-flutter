@@ -33,6 +33,7 @@ Future<void> AdminServiceDataGet() async {
             'selectedDeliveryType': data['selectedDeliveryType'],
             'selectedService': data['selectedService'],
             'selectedTimeSlot': data['selectedTimeSlot'],
+            "userissue": data['userissue'],
           };
 
           // Add it to the list

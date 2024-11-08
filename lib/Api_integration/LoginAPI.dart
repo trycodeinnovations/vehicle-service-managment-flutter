@@ -2,8 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Api_integration/ProfileGet.dart';
-import 'package:flutter_car_service/component/bottom_nav.dart';
+import 'package:flutter_car_service/User/component/bottom_nav.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> Login(context, email, pass) async {
   FirebaseAuth loginauth = FirebaseAuth.instance;
@@ -14,6 +15,9 @@ Future<void> Login(context, email, pass) async {
     print('a');
     String? type = await getlogintypes(email);
     print('abcd $type');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userType', type!); // 'admin', 'mechanic', or 'user'
+
     await profileGet();
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text("Login success as $type")));
@@ -60,6 +64,7 @@ Future<String?> getlogintypes(String email) async {
               "email": doc['email'],
               "car name": doc['car name'],
               "reg number": doc['reg number'],
+              "imageurl": doc['imageurl'],
             };
           }).toList();
         } else if (collection == "mechanics") {
@@ -75,6 +80,7 @@ Future<String?> getlogintypes(String email) async {
           }).toList();
           print(logindata);
         } else if (collection == "admin") {
+          print("admin not found");
           logindata = querySnapshot.docs.map((doc) {
             return {
               "name": doc['name'],

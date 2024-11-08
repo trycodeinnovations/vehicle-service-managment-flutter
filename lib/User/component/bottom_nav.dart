@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_car_service/data/pages/ProfileScreen.dart';
-import 'package:flutter_car_service/data/pages/home_pages.dart';
-import 'package:flutter_car_service/data/pages/service_form.dart';
+import 'package:flutter_car_service/User/data/pages/ProfileScreen.dart';
+import 'package:flutter_car_service/User/data/pages/home_pages.dart';
+import 'package:flutter_car_service/User/data/pages/service_form.dart';
 
 import 'package:flutter_car_service/style/color.dart';
 
@@ -15,7 +15,6 @@ class BottomNav extends StatefulWidget {
 class _BottomNavState extends State<BottomNav> {
   int pageIndex = 0;
 
-  // Use an empty list for selectedService in SubmissionScreen
   List<Widget> pages = [
     HomePage(),
     ServiceFormPage(),

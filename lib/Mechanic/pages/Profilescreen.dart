@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
+import 'package:flutter_car_service/Mechanic/pages/profileupdate.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MechanicProfile extends StatelessWidget {
@@ -23,7 +25,8 @@ class MechanicProfile extends StatelessWidget {
               SizedBox(height: 20),
               _buildSkillsSection(),
               SizedBox(height: 20),
-              _buildServiceHistorySection(),
+
+              _buildUpdateButton(context), // Add the Update button
             ],
           ),
         ),
@@ -39,9 +42,10 @@ class MechanicProfile extends StatelessWidget {
         child: Row(
           children: [
             CircleAvatar(
-              radius: 40, // Adjust the size as needed
+              radius: 40,
               backgroundImage: NetworkImage(
-                  "https://via.placeholder.com/150"), // Replace with mechanic's image URL
+                currentlogindata['imageUrl'] ?? 'img',
+              ),
             ),
             SizedBox(width: 16),
             Expanded(
@@ -49,7 +53,8 @@ class MechanicProfile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "John Doe", // Replace with mechanic's name
+                    currentlogindata[
+                        "name" ?? "no name"], // Replace with mechanic's name
                     style: GoogleFonts.poppins(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -57,7 +62,7 @@ class MechanicProfile extends StatelessWidget {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    "Certified Mechanic",
+                    "Senior Mechanic",
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       color: Colors.grey[600],
@@ -88,8 +93,8 @@ class MechanicProfile extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10),
-            Text("Phone: +1234567890"),
-            Text("Email: mechanic@example.com"),
+            Text(currentlogindata["phone"]),
+            Text(currentlogindata["email" ?? "email"]),
             Text("Location: New York, USA"), // Add location
           ],
         ),
@@ -150,27 +155,21 @@ class MechanicProfile extends StatelessWidget {
     );
   }
 
-  Widget _buildServiceHistorySection() {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Service History",
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 10),
-            Text("• Oil Change - 01/10/2024"),
-            Text("• Brake Replacement - 15/09/2024"),
-            Text("• Engine Diagnostics - 20/08/2024"),
-            // Add more service history as needed
-          ],
+  Widget _buildUpdateButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UpdateProfileScreen(),
+          ),
+        );
+      },
+      child: Text(
+        "Update Profile",
+        style: GoogleFonts.poppins(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

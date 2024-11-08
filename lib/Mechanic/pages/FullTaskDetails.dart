@@ -10,7 +10,7 @@ class TaskDetailsScreen extends StatefulWidget {
   final String date;
   final String timeSlot;
   final String phoneNumber;
-
+  final String userissue;
   const TaskDetailsScreen({
     Key? key,
     required this.userImage,
@@ -19,6 +19,7 @@ class TaskDetailsScreen extends StatefulWidget {
     required this.date,
     required this.timeSlot,
     required this.phoneNumber,
+    required this.userissue,
   }) : super(key: key);
 
   @override
@@ -94,12 +95,13 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
               .update({
             'cost': double.parse(_costController.text),
             'status': 'Completed',
+            'payment': 'notdone', // Add the new field with the value 'notdone'
           });
 
           _costController.clear();
 
           // Close the keyboard
-          FocusScope.of(context).unfocus(); // Dismiss the keyboard
+          FocusScope.of(context).unfocus();
 
           // Show success animation
           setState(() {
@@ -167,7 +169,11 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       SizedBox(height: 16),
                       Text('Date: ${widget.date}',
                           style: TextStyle(fontSize: 16)),
+                      SizedBox(height: 16),
                       Text('Time Slot: ${widget.timeSlot}',
+                          style: TextStyle(fontSize: 16)),
+                      SizedBox(height: 16),
+                      Text('Additional issue: ${widget.userissue}',
                           style: TextStyle(fontSize: 16)),
                       SizedBox(height: 16),
                       Row(
@@ -182,6 +188,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       Text(
                           'Delivery Type: ${additionalData?['selectedDeliveryType'] ?? 'N/A'}',
                           style: TextStyle(fontSize: 16)),
+                      SizedBox(height: 16),
                       Text(
                           'Pickup Selected: ${additionalData?['isPickupSelected'] == true ? 'Yes' : 'No'}',
                           style: TextStyle(fontSize: 16)),
@@ -204,7 +211,11 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       ),
                       SizedBox(height: 20),
                       ElevatedButton(
-                        onPressed: _updateEstimatedCost,
+                        onPressed: () async {
+                          _updateEstimatedCost();
+                          await Navigator.pushReplacementNamed(
+                              context, "/mechanicbottomnav");
+                        },
                         child: Text('Update Cost'),
                       ),
                     ],

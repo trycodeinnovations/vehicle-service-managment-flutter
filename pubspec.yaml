@@ -31,7 +31,6 @@ dependencies:
   table_calendar: ^3.0.0
   shared_preferences:   # Specify version
   firebase_messaging: ^15.1.3  # Specify version
-  flashy_tab_bar2: ^0.0.10
   swipeable_tile: ^2.0.1
   quickalert: ^1.0.0  # Specify version
   awesome_snackbar_content: ^0.1.4  # Specify version
@@ -50,6 +49,12 @@ dependencies:
   pdf: ^3.6.2
   printing: ^5.7.2
   flutter_pdfview: ^1.0.0
+  flutter_chat_ui: ^1.6.15
+  flutter_local_notifications:
+  motion_tab_bar: ^2.0.4
+  awesome_card:
+
+
 
   
 

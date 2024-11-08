@@ -79,14 +79,12 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
             var request = requests[index];
             List<Map<String, dynamic>> serviceType =
                 List<Map<String, dynamic>>.from(request['selectedService']);
-
-            // var vehicle = request['vehicle'];
             var status = request['status'];
 
             return GestureDetector(
               onTap: () {
                 if (status == 'Pending') {
-                  // Navigator.pushNamed(context, "/fulldetails");
+                  // Navigate to service details page
                 }
               },
               child: Dismissible(
@@ -97,6 +95,7 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
                   return await _showDeleteConfirmation(context) ?? false;
                 },
                 onDismissed: (direction) {
+                  // Deletes the request from Firestore
                   request.reference.delete();
                   _showToast(context, 'Request deleted');
                 },
@@ -215,8 +214,6 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
                   onTap: () {
                     AdminServiceDataGet();
                     TotalMechanics();
-                    // Navigator.pushReplacementNamed(
-                    //     context, "/allserviceDetails");
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -236,23 +233,7 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
                 )
               ],
             ),
-            // Row(
-            //   children: [
-
-            //     SizedBox(width: 8),
-            //     Text(
-            //       serviceType.toString(),
-            //       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            //     ),
-            //     Spacer(),
-
-            //   ],
-            // ),
             SizedBox(height: 4),
-            // Text(
-            //   vehicle,
-            //   style: TextStyle(fontSize: 14),
-            // ),
           ],
         ),
       ),

@@ -1,16 +1,18 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
 import 'package:flutter_car_service/Api_integration/ProfileGet.dart';
 import 'package:flutter_car_service/Api_integration/ServicedetailsGet.dart';
+import 'package:flutter_car_service/Mechanic/pages/live.dart';
 import 'package:flutter_car_service/constants/dayGeting.dart';
-import 'package:flutter_car_service/data/articles_data.dart';
-import 'package:flutter_car_service/data/last_service.dart';
-import 'package:flutter_car_service/data/pages/Review.dart';
-import 'package:flutter_car_service/data/service.dart';
-import 'package:flutter_car_service/data/pages/Fullservivedetail.dart';
-import 'package:flutter_car_service/data/pages/Oilservicedetailscreen.dart';
-import 'package:flutter_car_service/data/pages/soundsystemdetail.dart';
-import 'package:flutter_car_service/data/pages/tiredetails.dart';
+import 'package:flutter_car_service/User/data/articles_data.dart';
+import 'package:flutter_car_service/User/data/last_service.dart';
+import 'package:flutter_car_service/User/data/pages/Review.dart';
+import 'package:flutter_car_service/User/data/service.dart';
+import 'package:flutter_car_service/User/data/pages/Fullservivedetail.dart';
+import 'package:flutter_car_service/User/data/pages/Oilservicedetailscreen.dart';
+import 'package:flutter_car_service/User/data/pages/soundsystemdetail.dart';
+import 'package:flutter_car_service/User/data/pages/tiredetails.dart';
 import 'package:flutter_car_service/style/color.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'chatbot.dart';
@@ -25,14 +27,15 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final List<String> imgList = [
     'assets/images/img1.jpg',
-    'assets/images/img1.jpg',
-    'assets/images/img1.jpg',
+    'assets/images/9226862.jpg',
+    'assets/images/8187546.jpg',
   ];
 
   @override
   void initState() {
     super.initState();
     ServiceDataGet();
+    profileGet();
   }
 
   @override
@@ -252,43 +255,45 @@ SizedBox lastServiceList() {
       scrollDirection: Axis.horizontal,
       itemCount: servicedata.length,
       itemBuilder: (context, index) {
-        // Make sure the index is within the valid range
         if (index >= servicedata.length) {
           return Container(); // Graceful handling for out of range
         }
 
-        // Safely retrieve data from servicedata with null checks
+        // Retrieve data from servicedata with null checks
         String status = servicedata[index]['status'] ?? 'unknown';
+        String paymentStatus = servicedata[index]['payment'] ?? 'notdone';
         String selectedDate =
             servicedata[index]['selectedDate']?.toString() ?? '';
         String selectedTimeSlot = servicedata[index]['selectedTimeSlot'] ?? '';
         List<dynamic> selectedService =
             servicedata[index]["selectedService"] ?? [];
 
-        // Safely access 'selectedService[0]['title']' only if 'selectedService' is not empty
-        String serviceTitle =
-            selectedService.isNotEmpty && selectedService[0] != null
-                ? selectedService[0]['title'] ?? ''
-                : '';
+        String serviceTitle = selectedService.isNotEmpty
+            ? '${selectedService[0]['title'] ?? ''}${selectedService.length > 1 ? '...' : ''}'
+            : '';
 
-        // Determine icon and text based on service status
+        // Determine icon, color, status text, and button text based on status and payment
         Icon statusIcon;
         Color iconColor;
         String statusText;
         String buttonText;
+        String cleanStatus = status
+            .trim()
+            .toLowerCase(); // Trim whitespaces and convert to lowercase
 
-        if (status.toLowerCase() == 'Pending' ||
-            status.toLowerCase() == 'in progress') {
+        if (cleanStatus == 'pending' || cleanStatus == 'in progress') {
           statusIcon = Icon(Icons.pending, color: Colors.orange);
           iconColor = Colors.orange;
           statusText = "In Progress";
           buttonText = "Track";
-        } else if (status.toLowerCase() == 'Completed') {
+        } else if (cleanStatus == 'completed') {
           statusIcon = Icon(Icons.check_circle, color: Colors.green);
           iconColor = Colors.green;
           statusText = "Completed";
           buttonText = "Detail";
         } else {
+          // Debug print to check what value is triggering "Unknown Status"
+          print('Unknown status: $cleanStatus');
           statusIcon = Icon(Icons.error, color: Colors.red);
           iconColor = Colors.red;
           statusText = "Unknown Status";
@@ -399,7 +404,9 @@ SizedBox lastServiceList() {
                     if (buttonText == "Track") {
                       Navigator.pushNamed(context, "/stepper");
                     } else {
-                      Navigator.pushNamed(context, "/detailScreen");
+                      // Call the bottom sheet function with the current service data
+                      showServiceRequestDetailsBottomSheet(
+                          context, servicedata[index]);
                     }
                   },
                   child: Container(
@@ -425,6 +432,156 @@ SizedBox lastServiceList() {
         );
       },
     ),
+  );
+}
+
+// Method to show the bottom sheet
+void showServiceRequestDetailsBottomSheet(
+    BuildContext context, Map<String, dynamic> servicedata) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true, // Allow scrolling if the content is too long
+    builder: (context) {
+      return ServiceRequestDetailsBottomSheet(servicedata: servicedata);
+    },
+  );
+}
+
+class ServiceRequestDetailsBottomSheet extends StatelessWidget {
+  final Map<String, dynamic> servicedata;
+
+  const ServiceRequestDetailsBottomSheet({
+    Key? key,
+    required this.servicedata,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Get screen width
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Container(
+      padding: EdgeInsets.all(16.0), // Padding for the bottom sheet
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(
+            top: Radius.circular(20)), // Rounded top corners
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // Make the column take minimum height
+        children: [
+          Text(
+            'Service Request Details',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 17,
+            ),
+          ),
+          SizedBox(height: 16),
+          _buildRow('Phone Number',
+              servicedata['phoneNumber'] ?? 'Not provided', screenWidth),
+          SizedBox(height: 8), // Space between rows
+          _buildRow(
+              'Email', servicedata['email'] ?? 'Not provided', screenWidth),
+          SizedBox(height: 8), // Space between rows
+          _buildRow(
+              'Status', servicedata['status'] ?? 'Not specified', screenWidth),
+          SizedBox(height: 8), // Space between rows
+          _buildRow(
+              'Cost', servicedata['cost'] ?? 'Not specified', screenWidth),
+          SizedBox(height: 8), // Space between rows
+          _buildRow('Mechanic Name', servicedata['mechanic'] ?? 'Unknown',
+              screenWidth),
+          SizedBox(height: 8), // Space between rows
+          _buildRow('Selected Date',
+              servicedata['selectedDate'] ?? 'Not specified', screenWidth),
+          SizedBox(height: 8), // Space between rows
+          _buildRow('Selected Time Slot',
+              servicedata['selectedTimeSlot'] ?? 'Not specified', screenWidth),
+          SizedBox(height: 8), // Space between rows
+          _buildRow(
+              'Selected Services',
+              (servicedata['selectedService']
+                      ?.map((service) => service['title'])
+                      .join(', ') ??
+                  'None'),
+              screenWidth),
+        ],
+      ),
+    );
+  }
+
+  // Helper method to build rows for displaying details
+  Widget _buildRow(String label, String value, double screenWidth) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: screenWidth * 0.4, // Fixed width for label
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: screenWidth * 0.04,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        SizedBox(width: screenWidth * 0.02), // Space between name and colon
+        Text(
+          ':', // Colon after label
+          style: TextStyle(
+            fontSize: screenWidth * 0.04,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(width: screenWidth * 0.04), // Space between colon and value
+        Expanded(
+          child: Text(
+            value,
+            style: TextStyle(
+              fontSize: screenWidth * 0.04,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Helper method to build rows for displaying details
+Widget _buildRow(String label, String value, double screenWidth) {
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      SizedBox(
+        width: screenWidth * 0.4, // Fixed width for label
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: screenWidth * 0.04,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      SizedBox(width: screenWidth * 0.02), // Space between name and colon
+      Text(
+        ':', // Colon after label
+        style: TextStyle(
+          fontSize: screenWidth * 0.04,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      SizedBox(width: screenWidth * 0.04), // Space between colon and value
+      Expanded(
+        child: Text(
+          value,
+          style: TextStyle(
+            fontSize: screenWidth * 0.04,
+          ),
+        ),
+      ),
+    ],
   );
 }
 
@@ -462,7 +619,7 @@ class ProfileContainer extends StatelessWidget {
                 CircleAvatar(
                   radius: 25,
                   backgroundImage: NetworkImage(
-                    profiledata['imageurl'] ??
+                    currentlogindata['imageurl'] ??
                         'https://example.com/default_image.png', // Default image URL if none
                   ),
                 ),
@@ -471,7 +628,7 @@ class ProfileContainer extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      profiledata['name'] ??
+                      currentlogindata['name'] ??
                           'No Name', // Default text if name is missing
                       style: GoogleFonts.poppins(
                         color: mainColor,

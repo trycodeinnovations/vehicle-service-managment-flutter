@@ -36,9 +36,13 @@ Future<void> ServiceDataGet() async {
             'selectedDeliveryType': data['selectedDeliveryType'],
             'selectedService': data['selectedService'],
             'selectedTimeSlot': data['selectedTimeSlot'],
-            "status": "Pending",
-            "mechanic": "not assign",
-            "cost": "estimated",
+            "status": data['status'],
+            "mechanic": data["not assign"],
+            "cost": data["estimated"],
+            "userissue": data['userissue'],
+            "phoneNumber": data['phoneNumber'],
+            "email": data["email"],
+            "payment": data["notdone"]
           };
 
           // Add it to the list

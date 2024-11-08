@@ -1,29 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
 import 'package:flutter_car_service/Mechanic/pages/Assignedscreen.dart';
+import 'package:flutter_car_service/Mechanic/pages/completedtaks.dart';
 import 'package:flutter_car_service/style/color.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:quickalert/quickalert.dart';
 
-class MechanicHomePage extends StatelessWidget {
+class MechanicHomePage extends StatefulWidget {
+  @override
+  _MechanicHomePageState createState() => _MechanicHomePageState();
+}
+
+class _MechanicHomePageState extends State<MechanicHomePage> {
+  int totalTasksAssigned = 0;
+  int completedTasks = 0;
+  int pendingTasks = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchTaskCounts();
+  }
+
+  Future<void> _fetchTaskCounts() async {
+    // Get total tasks assigned
+    QuerySnapshot assignedTasksSnapshot = await FirebaseFirestore.instance
+        .collection("serviceReqDetails")
+        .where("mechanic", isEqualTo: currentlogindata["name"])
+        .get();
+
+    setState(() {
+      totalTasksAssigned = assignedTasksSnapshot.docs.length;
+    });
+
+    // Get completed tasks
+    QuerySnapshot completedTasksSnapshot = await FirebaseFirestore.instance
+        .collection("serviceReqDetails")
+        .where("status", isEqualTo: "Completed")
+        .where("mechanic", isEqualTo: currentlogindata["name"])
+        .get();
+
+    setState(() {
+      completedTasks = completedTasksSnapshot.docs.length;
+    });
+
+    // Calculate pending tasks
+    setState(() {
+      pendingTasks = totalTasksAssigned - completedTasks;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: AppBar(
-          // title: Text("Assigned Work"),
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: size.width * 0.045),
+          child: Column(
+            children: [
+              SizedBox(height: 20),
+              _buildProfileSection(context),
+              SizedBox(height: 20),
+              _buildTasksSection(context, size),
+            ],
           ),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: size.width * 0.045),
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-            _buildProfileSection(context),
-            SizedBox(height: 20),
-            _buildTasksSection(context, size),
-          ],
         ),
       ),
     );
@@ -32,8 +76,7 @@ class MechanicHomePage extends StatelessWidget {
   Widget _buildProfileSection(BuildContext context) {
     return InkWell(
       onTap: () {
-        // Uncomment to navigate to ProfileScreen
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+        // Navigate to profile settings (if needed)
       },
       child: Container(
         padding: const EdgeInsets.all(10),
@@ -90,7 +133,7 @@ class MechanicHomePage extends StatelessWidget {
                 IconButton(
                   icon: Icon(
                     Icons.logout,
-                    color: subText, // Set the color for the logout icon
+                    color: subText,
                     size: 25,
                   ),
                   onPressed: () {
@@ -100,7 +143,6 @@ class MechanicHomePage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            // Remove the ElevatedButton for Logout, as we are using the icon instead
           ],
         ),
       ),
@@ -116,10 +158,7 @@ class MechanicHomePage extends StatelessWidget {
       confirmBtnText: "Yes",
       cancelBtnText: "No",
       onConfirmBtnTap: () {
-        // Perform the logout action here
-        // For example, clear user session or navigate to the login screen
-        Navigator.of(context)
-            .pushReplacementNamed('/signin'); // Adjust navigation as needed
+        Navigator.of(context).pushReplacementNamed('/signin');
       },
     );
   }
@@ -133,6 +172,8 @@ class MechanicHomePage extends StatelessWidget {
           _buildSummarySection(size),
           SizedBox(height: 20),
           _buildAssignedTasksSection(context, size),
+          SizedBox(height: 20),
+          _buildCompletedTasksSection(context, size), // Completed tasks section
         ],
       ),
     );
@@ -142,9 +183,10 @@ class MechanicHomePage extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildSummaryTile("Total Tasks Assigned", "5"),
-        _buildSummaryTile("Completed Tasks", "3"),
-        _buildSummaryTile("Pending Tasks", "2"),
+        _buildSummaryTile(
+            "Total Tasks Assigned", totalTasksAssigned.toString()),
+        _buildSummaryTile("Completed Tasks", completedTasks.toString()),
+        _buildSummaryTile("Pending Tasks", pendingTasks.toString()),
       ],
     );
   }
@@ -236,59 +278,88 @@ class MechanicHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTaskCard(String email, String date, String userEmail) {
+  Widget _buildCompletedTasksSection(BuildContext context, Size size) {
+    return InkWell(
+      onTap: () {
+        // Navigate to the CompletedTasksScreen when tapped
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CompletedTasksScreen()),
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 4,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionHeader("Completed Tasks", () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CompletedTasksScreen()),
+              );
+            }),
+            // You can add a FutureBuilder or other widget to display completed tasks here if needed
+            SizedBox(height: 10),
+            Text(
+              "Tap to view completed tasks",
+              style: TextStyle(color: Colors.grey),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTaskCard(String name, String date, String email) {
     return FutureBuilder<DocumentSnapshot>(
-      future:
-          FirebaseFirestore.instance.collection("users").doc(userEmail).get(),
+      future: FirebaseFirestore.instance.collection("users").doc(email).get(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(child: Text('Error fetching user image.'));
+          return Center(child: Text('Error: ${snapshot.error}'));
         }
 
-        var userData = snapshot.data;
-        String imgPath = userData != null && userData.exists
-            ? userData['imageurl'] ??
-                'default_image_url' // Replace with your default image URL
-            : 'default_image_url'; // Fallback image if user not found
+        final userImage = snapshot.data?['imageurl'] ?? 'default_image_url';
 
         return Card(
           margin: EdgeInsets.symmetric(vertical: 8),
           child: ListTile(
             leading: CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage(imgPath),
+              backgroundImage: NetworkImage(userImage),
             ),
-            title: Text(email),
-            subtitle: Text('Date: $date'),
-            trailing: Icon(Icons.arrow_forward_ios, size: 15),
-            onTap: () {
-              // Handle task details navigation
-            },
+            title: Text(name),
+            subtitle: Text("Assigned on: $date"),
           ),
         );
       },
     );
   }
 
-  Widget _buildSectionHeader(String title, VoidCallback onSeeAllPressed) {
+  Widget _buildSectionHeader(String title, Function onTap) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           title,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 2.5,
-          ),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        InkWell(
-          onTap: onSeeAllPressed,
+        TextButton(
+          onPressed: () => onTap(),
           child: Text(
-            "See all",
+            "See All",
             style: TextStyle(color: Colors.red),
           ),
         ),

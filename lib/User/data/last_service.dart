@@ -1,4 +1,4 @@
-import '../models/last_service_models.dart';
+import '../../models/last_service_models.dart';
 
 List<LastServiceModels> lastService = [
   LastServiceModels(

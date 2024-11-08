@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Authentication/SigninScreen.dart';
-import 'package:flutter_car_service/component/bottom_nav.dart';
+import 'package:flutter_car_service/User/component/bottom_nav.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../style/color.dart';
+import '../../../style/color.dart';
 
 class GetStarted extends StatefulWidget {
   const GetStarted({super.key});

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Admin/Pages/Adminhomepage.dart';
 import 'package:flutter_car_service/style/color.dart';
-import 'package:flutter_car_service/data/pages/ProfileScreen.dart';
-import 'package:flutter_car_service/data/pages/home_pages.dart';
-import 'package:flutter_car_service/data/pages/service_form.dart';
+import 'package:flutter_car_service/User/data/pages/ProfileScreen.dart';
+import 'package:flutter_car_service/User/data/pages/home_pages.dart';
+import 'package:flutter_car_service/User/data/pages/service_form.dart';
 
 class BottomNavScreen extends StatefulWidget {
   @override
@@ -15,7 +15,10 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
 
   // Define the list of pages that the bottom navigation will switch between
   final List<Widget> _pages = [
-   AdminDashboard(title: "title",mainColor: mainColor,),    // Your ProfileScreen widget
+    AdminDashboard(
+      title: "title",
+      mainColor: mainColor,
+    ), // Your ProfileScreen widget
   ];
 
   @override
@@ -23,7 +26,8 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
     return Scaffold(
       body: _pages[_currentIndex], // Display the current page
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.fromLTRB(20.0, 5, 20, 20), // Adjust to raise the bar slightly
+        padding: EdgeInsets.fromLTRB(
+            20.0, 5, 20, 20), // Adjust to raise the bar slightly
         child: _buildBottomNavBar(),
       ),
     );
@@ -58,7 +62,9 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
       padding: EdgeInsets.only(left: 6, right: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: _currentIndex == index ? Colors.white : Colors.transparent, // Highlight selected item
+        color: _currentIndex == index
+            ? Colors.white
+            : Colors.transparent, // Highlight selected item
       ),
       child: IconButton(
         onPressed: () {
@@ -68,7 +74,9 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
         },
         icon: Icon(
           icon,
-          color: _currentIndex == index ? mainColor : Colors.white, // Active icon color
+          color: _currentIndex == index
+              ? mainColor
+              : Colors.white, // Active icon color
           size: 30,
         ),
       ),

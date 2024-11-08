@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_car_service/constants/dayGeting.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_car_service/constants/dayGeting.dart';
 
 class ServiceDetailsScreen extends StatefulWidget {
   ServiceDetailsScreen({super.key, required this.all});
@@ -59,12 +60,49 @@ class _ServiceDetailCard extends StatefulWidget {
 class __ServiceDetailCardState extends State<_ServiceDetailCard> {
   String? _selectedMechanic;
   List<String> mechanics = [];
-  bool isLoading = false; // Add loading state
+  bool isLoading = false;
+
+  // Flutter local notifications plugin initialization
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
     super.initState();
+    _initializeNotifications();
     _fetchMechanics();
+  }
+
+  void _initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  Future<void> _sendInProgressNotification() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'service_request_channel',
+      'Service Request Notifications',
+      channelDescription: 'Notifications for service request status changes.',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0, // Notification ID
+      'Request In Progress', // Title
+      'Your service request has been submitted successfully and is now in progress.',
+      platformChannelSpecifics,
+      payload: 'service_request_inprogress',
+    );
   }
 
   Future<void> _fetchMechanics() async {
@@ -76,6 +114,52 @@ class __ServiceDetailCardState extends State<_ServiceDetailCard> {
       });
     } catch (e) {
       print("Error fetching mechanics: $e");
+    }
+  }
+
+  Future<void> _updateServiceStatus() async {
+    if (_selectedMechanic != null) {
+      setState(() {
+        isLoading = true;
+      });
+
+      String serviceDocumentId = widget.service.id;
+
+      try {
+        // Update the service request details in Firestore
+        await FirebaseFirestore.instance
+            .collection('serviceReqDetails')
+            .doc(serviceDocumentId)
+            .update({
+          'status': 'in progress', // Update the status
+          'mechanic': _selectedMechanic, // Assign the mechanic
+          'payment': 'notdone', // Add the payment field and set it to 'notdone'
+        });
+
+        // Send notification to user
+        await _sendInProgressNotification();
+
+        // Show confirmation message as a quick alert
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Assigned $_selectedMechanic, updated status to "in progress" and payment to "notdone"'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating service: $e')),
+        );
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select a mechanic.')),
+      );
     }
   }
 
@@ -125,49 +209,7 @@ class __ServiceDetailCardState extends State<_ServiceDetailCard> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: isLoading
-                  ? null
-                  : () async {
-                      if (_selectedMechanic != null) {
-                        setState(() {
-                          isLoading = true; // Set loading to true
-                        });
-
-                        String serviceDocumentId = widget.service.id;
-
-                        try {
-                          await FirebaseFirestore.instance
-                              .collection('serviceReqDetails')
-                              .doc(serviceDocumentId)
-                              .update({
-                            'status': 'in progress',
-                            'mechanic': _selectedMechanic,
-                          });
-
-                          // Show confirmation message as a quick alert
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                  'Assigned $_selectedMechanic and updated status to "in progress"'),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text('Error updating service: $e')),
-                          );
-                        } finally {
-                          setState(() {
-                            isLoading = false; // Reset loading state
-                          });
-                        }
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Please select a mechanic.')),
-                        );
-                      }
-                    },
+              onPressed: isLoading ? null : _updateServiceStatus,
               child: isLoading
                   ? CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),

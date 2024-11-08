@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Api_integration/Googlelogin.dart';
 import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
-
 import 'package:flutter_car_service/Api_integration/ProfileGet.dart';
 import 'package:flutter_car_service/Api_integration/ServicedetailsGet.dart';
 import 'package:flutter_car_service/Api_integration/ushNotification.dart';
 import 'package:flutter_car_service/Authentication/Constants.dart';
 import 'package:flutter_car_service/Authentication/ForgetPasswordScreen.dart';
 import 'package:flutter_car_service/Authentication/SignUpScreen.dart';
-import 'package:flutter_car_service/Widgets/customScafold.dart';
-import 'package:flutter_car_service/component/bottom_nav.dart';
+import 'package:flutter_car_service/Mechanic/component/bottomnav.dart';
+import 'package:flutter_car_service/User/Widgets/customScafold.dart';
 
-import 'package:flutter_car_service/data/pages/get_started.dart';
-import 'package:flutter_car_service/data/pages/home_pages.dart';
+import 'package:flutter_car_service/User/component/bottom_nav.dart';
+import 'package:flutter_car_service/User/data/pages/get_started.dart';
+import 'package:flutter_car_service/User/data/pages/home_pages.dart';
 import 'package:flutter_car_service/style/color.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,9 +28,11 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final _formSignInKey = GlobalKey<FormState>();
   bool rememberPassword = true;
+  bool isLoading = false; // Add a loading state
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   String? userId;
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -173,52 +175,49 @@ class _SignInScreenState extends State<SignInScreen> {
                           child: InkWell(
                             splashColor: subText,
                             borderRadius: BorderRadius.circular(15),
-                            onTap: () {
-                              if (_formSignInKey.currentState!.validate() &&
-                                  rememberPassword) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Processing Data'),
-                                  ),
-                                );
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => GetStarted(),
-                                  ),
-                                );
-                                // triggerNotifications();
-                              } else if (!rememberPassword) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Please agree to the processing of personal data'),
-                                  ),
-                                );
-                              }
-                            },
-                            child: InkWell(
-                              onTap: () {
-                                Login(context, emailController.text,
+                            onTap: () async {
+                              if (_formSignInKey.currentState!.validate()) {
+                                setState(() {
+                                  isLoading = true; // Set loading state to true
+                                });
+
+                                // Attempt to log in the user
+                                await Login(context, emailController.text,
                                     passwordController.text);
                                 ServiceDataGet();
-                              },
-                              child: Container(
-                                width: double.infinity,
-                                padding: EdgeInsets.all(15),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: Text(
-                                  "Sign in",
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
+
+                                // Fetch user type and save it in SharedPreferences
+                                ServiceDataGet(); // Assume this function fetches userType
+
+                                setState(() {
+                                  isLoading =
+                                      false; // Set loading state to false
+                                });
+                              }
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
                               ),
+                              child: isLoading
+                                  ? Center(
+                                      child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
+                                      ),
+                                    )
+                                  : Text(
+                                      "Sign in",
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                             ),
                           ),
                         ),
@@ -257,19 +256,29 @@ class _SignInScreenState extends State<SignInScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          ElevatedButton(
+                          IconButton(
                             onPressed: () async {
-                              await Firebaseservices().signinwithgoogle();
-                              Navigator.pushReplacement(
+                              // Call the Google sign-in method
+                              try {
+                                await Firebaseservices().signinwithgoogle();
+                                // Navigate to BottomNav after successful sign-in
+                                Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => BottomNav(),
-                                  )); // Use the corrected function name
+                                  ),
+                                );
+                              } catch (error) {
+                                // Handle any errors during sign-in
+                                print("Error signing in with Google: $error");
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          "Sign-in failed. Please try again.")),
+                                );
+                              }
                             },
-                            child: Icon(Bootstrap.google),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    mainColor), // Update the button's background color
+                            icon: Icon(Bootstrap.google, color: mainColor),
                           ),
                           Icon(Bootstrap.facebook, color: mainColor),
                           Icon(Bootstrap.apple, color: mainColor),
@@ -304,7 +313,6 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 20.0),
                     ],
                   ),
                 ),

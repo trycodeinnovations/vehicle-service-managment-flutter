@@ -38,7 +38,12 @@ class _ChatbotState extends State<Chatbot> {
   }
 
   String _generateDynamicResponse(String query) {
-    if (query.contains('service') || query.contains('offer')) {
+    // Check for greetings
+    if (query.contains('hi') ||
+        query.contains('hello') ||
+        query.contains('hey')) {
+      return "Hi there! How can I assist you today?";
+    } else if (query.contains('service') || query.contains('offer')) {
       return "We offer a variety of services including oil changes, tire services, and sound system installations.";
     } else if (query.contains('book')) {
       return "You can book a service through the app's service section. Just select the service you want!";
