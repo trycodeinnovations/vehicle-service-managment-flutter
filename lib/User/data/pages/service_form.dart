@@ -66,7 +66,7 @@ class _ServiceFormPageState extends State<ServiceFormPage> {
     await flutterLocalNotificationsPlugin.show(
       0, // Notification ID
       'Request Submitted',
-      'Your request has been successfully submitted!',
+      'Your request has been successfully submitted! Thanks for using CREWS AUTO',
       platformChannelSpecifics,
     );
   }

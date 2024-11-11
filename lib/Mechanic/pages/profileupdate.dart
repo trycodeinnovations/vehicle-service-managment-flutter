@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
+import 'package:flutter_car_service/style/color.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart'; // For image picking
@@ -232,7 +233,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: _updateProfile,
-              child: Text("Update Profile"),
+              child: Text(
+                "Update Profile",
+                style: TextStyle(color: mainColor),
+              ),
             ),
           ],
         ),

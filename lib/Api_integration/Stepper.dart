@@ -5,6 +5,7 @@ import 'package:another_stepper/another_stepper.dart';
 import 'package:flutter_car_service/User/data/pages/paymentscreen.dart';
 import 'package:flutter_car_service/main.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -26,6 +27,25 @@ class _RequestStatusStepperState extends State<RequestStatusStepper> {
   }
 
   Future<void> showCompletedNotification(ServiceRequest request) async {
+    const androidDetails = AndroidNotificationDetails(
+      'service_request_channel', // channel ID
+      'Service Request Updates', // channel name
+      channelDescription: 'Notifications about service request status',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+    const notificationDetails = NotificationDetails(android: androidDetails);
+
+    await flutterLocalNotificationsPlugin.show(
+      0, // notification ID
+      'Service Request Completed',
+      'Your service request for ${request.title} has been completed.',
+      notificationDetails,
+      payload: 'service_request_completed',
+    );
+  }
+
+  Future<void> showCompletedNotificationn(ServiceRequest request) async {
     const androidDetails = AndroidNotificationDetails(
       'service_request_channel', // channel ID
       'Service Request Updates', // channel name
@@ -119,6 +139,7 @@ class _RequestStatusStepperState extends State<RequestStatusStepper> {
 
   Future<void> _generatePdf(ServiceRequest request) async {
     final pdf = pw.Document();
+    final formatter = NumberFormat.currency(symbol: 'Rs ', decimalDigits: 2);
 
     pdf.addPage(
       pw.Page(
@@ -132,11 +153,129 @@ class _RequestStatusStepperState extends State<RequestStatusStepper> {
               pw.Table(
                 border: pw.TableBorder.all(),
                 children: [
-                  // Add table rows here, as defined earlier
+                  pw.TableRow(children: [
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text('Field',
+                          style: pw.TextStyle(
+                              fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text('Details',
+                          style: pw.TextStyle(
+                              fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                    ),
+                  ]),
+                  pw.TableRow(children: [
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text('Contact Number',
+                          style: pw.TextStyle(fontSize: 18)),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text(request.title,
+                          style: pw.TextStyle(fontSize: 18)),
+                    ),
+                  ]),
+                  pw.TableRow(children: [
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child:
+                          pw.Text('Email', style: pw.TextStyle(fontSize: 18)),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text(request.email,
+                          style: pw.TextStyle(fontSize: 18)),
+                    ),
+                  ]),
+                  pw.TableRow(children: [
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child:
+                          pw.Text('Status', style: pw.TextStyle(fontSize: 18)),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text(request.status,
+                          style: pw.TextStyle(fontSize: 18)),
+                    ),
+                  ]),
+                  pw.TableRow(children: [
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text('Cost',
+                          style: pw.TextStyle(
+                            fontSize: 18,
+                          )),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text(
+                        formatter.format(
+                            request.cost), // Format the cost as currency
+                        style: pw.TextStyle(fontSize: 18, color: PdfColors.red),
+                      ),
+                    ),
+                  ]),
+                  pw.TableRow(children: [
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text('Mechanic Name',
+                          style: pw.TextStyle(fontSize: 18)),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text(request.mechanic,
+                          style: pw.TextStyle(fontSize: 18)),
+                    ),
+                  ]),
+                  pw.TableRow(children: [
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text('Selected Services',
+                          style: pw.TextStyle(fontSize: 18)),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text(
+                        request.selectedService
+                            .map((service) => service['title'] ?? 'Unknown')
+                            .join(', '),
+                        style: pw.TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ]),
+                  pw.TableRow(children: [
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text('Selected Date',
+                          style: pw.TextStyle(fontSize: 18)),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text(request.selectedDate,
+                          style: pw.TextStyle(fontSize: 18)),
+                    ),
+                  ]),
+                  pw.TableRow(children: [
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text('Selected TimeSlot',
+                          style: pw.TextStyle(fontSize: 18)),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8.0),
+                      child: pw.Text(request.selectedTimeSlot,
+                          style: pw.TextStyle(fontSize: 18)),
+                    ),
+                  ]),
                 ],
               ),
               pw.SizedBox(height: 20),
-              pw.Text('Thank you for choosing CrewsAuto!',
+              pw.Text('Thank you for choosing CrewsAuto!', // Thank you message
                   style: pw.TextStyle(
                       fontSize: 18, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 10),
@@ -198,7 +337,7 @@ class _RequestStatusStepperState extends State<RequestStatusStepper> {
                               case 'Completed':
                                 currentStep = 2;
                                 if (currentStep == 0) {
-                                  showCompletedNotification(
+                                  showCompletedNotificationn(
                                       request); // Trigger notification for "Request Submitted"
                                 }
                                 break;

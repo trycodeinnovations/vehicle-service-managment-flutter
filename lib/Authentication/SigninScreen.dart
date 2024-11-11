@@ -60,7 +60,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Welcome back',
+                        'Welcome ',
                         style: GoogleFonts.poppins(
                           fontSize: 30.0,
                           fontWeight: FontWeight.w900,

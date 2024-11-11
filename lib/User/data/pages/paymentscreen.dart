@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_car_service/Api_integration/Stepper.dart';
 import 'package:flutter_car_service/User/data/pages/Addcard.dart';
 import 'package:flutter_car_service/style/color.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -112,6 +113,30 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     );
   }
 
+  Future<void> _showServiceRequestCompletedNotification() async {
+    await Future.delayed(Duration(seconds: 10));
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'service_request_channel', // Channel ID
+      'Service Request Notifications', // Channel name
+      channelDescription: 'Notifications when service request is completed.',
+      importance: Importance.high,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      1, // Notification ID (unique for service request completion)
+      'Service Request Completed', // Title
+      'Your service request has been successfully completed. Thank you for using our service!', // Body
+      platformChannelSpecifics,
+      payload: 'service_request_completed', // Payload (optional)
+    );
+  }
+
   Future<void> _updatePaymentStatus() async {
     try {
       if (_serviceDocument != null) {
@@ -127,6 +152,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 
         // Show the notification
         await _showPaymentCompletedNotification();
+        await _showServiceRequestCompletedNotification();
 
         // Navigate to Stepper page after payment success
         Navigator.pushReplacement(
@@ -285,9 +311,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  backgroundColor: Colors.blue,
-                ),
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    backgroundColor: mainColor),
                 child: Text(
                   'Proceed to Pay',
                   style: GoogleFonts.poppins(color: Colors.white),

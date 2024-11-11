@@ -3,7 +3,7 @@ import 'package:flutter_car_service/Admin/Pages/AddMechanicScreen.dart';
 import 'package:flutter_car_service/Admin/Pages/CategoriesAdd.dart';
 import 'package:flutter_car_service/Admin/Pages/TotalMechanics.dart';
 import 'package:flutter_car_service/Admin/Pages/ServiceRequestScreen.dart';
-// New Page
+
 import 'package:flutter_car_service/Admin/Pages/finishedRequst.dart';
 import 'package:flutter_car_service/Admin/Pages/totalrequest.dart';
 import 'package:flutter_car_service/Api_integration/AdminServiceFet.dart';
@@ -35,13 +35,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
   ];
 
   final List<Map<String, dynamic>> stats1 = [
-    {'icon': Icons.grid_view, 'title': 'Total Categories'},
+    {'icon': Icons.grid_view, 'title': 'Total enquiries'},
     {'icon': 'assets/images/Mechanic1.jpg', 'title': 'Total Mechanics'},
   ];
 
   final List<Map<String, dynamic>> stats2 = [
     {'icon': Icons.grid_view, 'title': 'Total Services'},
-    {'icon': Icons.file_copy, 'title': 'Finished Requests'},
+    {'icon': Icons.file_copy, 'title': 'Service Requests'},
   ];
 
   int _selectedIndex = 0;
@@ -163,10 +163,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   MaterialPageRoute(
                       builder: (context) => MechanicProfileScreen()),
                 );
-              } else if (stats[index]['title'] == 'Finished Request') {
+              } else if (stats[index]['title'] == 'Service Requests') {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => FinishedRequestsScreen(),
+                    builder: (context) => ServiceRequestScreen(),
                   ),
                 );
               } else if (stats[index]['title'] == 'Total Services') {
@@ -176,11 +176,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         RequestsScreen(), // New Screen for Request View
                   ),
                 );
-              } else if (stats[index]['title'] == 'Total Categories') {
+              } else if (stats[index]['title'] == 'Total enquiries') {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) =>
-                        ServiceFetchScreen(), // New Screen for Request View
+                        UserTicketsScreen(), // New Screen for Request View
                   ),
                 );
               }
@@ -272,8 +272,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
         BottomNavigationBarItem(
             icon: Icon(Icons.dashboard), label: 'Dashboard'),
         BottomNavigationBarItem(icon: Icon(Icons.build), label: 'Mechanics'),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.assignment), label: 'Requests'),
+        // BottomNavigationBarItem(
+        //     icon: Icon(Icons.assignment), label: 'Requests'),
         BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
       ],
       currentIndex: _selectedIndex,

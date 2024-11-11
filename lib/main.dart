@@ -29,11 +29,13 @@ import 'style/color.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // final fcmToken = await FirebaseMessaging.instance.getToken();
-  // print("FCM Token: $fcmToken"); // Uncomment for debugging
+  // Request Notification Permissions (for Android 13 and above)
+  await requestNotificationPermission();
 
+  // Initialize Awesome Notifications
   AwesomeNotifications().initialize(
     'resourceKey', // Specify a resource key
     [
@@ -47,8 +49,22 @@ void main() async {
   );
 
   runApp(const MyApp());
-} // Declare a global notification plugin instance
+}
 
+// Function to request notification permission (for Android 13+)
+Future<void> requestNotificationPermission() async {
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    final status =
+        await AwesomeNotifications().requestPermissionToSendNotifications();
+    if (status) {
+      print("Notification permission granted!");
+    } else {
+      print("Notification permission denied!");
+    }
+  }
+}
+
+// Declare a global notification plugin instance
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
@@ -56,6 +72,10 @@ Future<void> _initializeNotifications() async {
   // Initialization settings for Android
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+  );
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
 
 class MyApp extends StatelessWidget {
@@ -80,7 +100,6 @@ class MyApp extends StatelessWidget {
                 mainColor: mainColor,
               ),
           "/bottom": (context) => BottomNav(),
-          // "/paymentScreen": (context) => PaymentMethodScreen(cost: ,),
           "/signin": (context) => SignInScreen(),
           "/addmechanic": (context) => AddMechanicScreen(),
           "/mechanicbottomnav": (context) => BotomMechanic(),

@@ -1,15 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
+import 'package:flutter_car_service/main.dart';
 import 'package:flutter_car_service/style/color.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart'; // Import the local notification package
 
 class ProfileUpdateScreen extends StatefulWidget {
   @override
@@ -19,42 +18,26 @@ class ProfileUpdateScreen extends StatefulWidget {
 class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  File? _imageFile; // Variable to store the selected image
-  String? _imageUrl; // Variable to store the image URL
+  File? _imageFile;
+  String? _imageUrl;
+  bool _isLoading = false; // Variable to track loading state
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin(); // Initialize local notifications
-
   @override
   void initState() {
     super.initState();
-    _initializeNotifications(); // Initialize notifications when the screen is loaded
-    _loadUserProfile(); // Load current user data on initialization
-  }
+    _loadUserProfile();
+  } // Notification function for Profile Update
 
-  // Initialize the notification settings for Android and iOS
-  Future<void> _initializeNotifications() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings(
-            'app_icon'); // Ensure you have an app icon
-
-    final InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
-
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  }
-
-  // Function to show local notification
-  Future<void> _showNotification(String title, String message) async {
+  Future<void> _showProfileUpdatedNotification(BuildContext context) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'profile_update_channel', // Channel ID
-      'Profile Update', // Channel name
-      channelDescription: 'Notifications for profile update',
+      'profile_channel', // Channel ID
+      'Profile Notifications', // Channel name
+      channelDescription: 'Notifications when profile is updated.',
       importance: Importance.high,
       priority: Priority.high,
       ticker: 'ticker',
@@ -65,17 +48,17 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
     await flutterLocalNotificationsPlugin.show(
       0, // Notification ID
-      title,
-      message,
+      'Profile Updated', // Title
+      'Your profile has been updated successfully!', // Body
       platformChannelSpecifics,
-      payload: 'profile_updated',
+      payload: 'profile_updated', // Optional payload
     );
   }
 
+  // Load the current user profile data
   Future<void> _loadUserProfile() async {
-    User? user = _auth.currentUser; // Get the current user
+    User? user = _auth.currentUser;
     if (user != null) {
-      // Use user.email to retrieve the document from Firestore
       DocumentSnapshot snapshot =
           await _firestore.collection('users').doc(user.email).get();
       if (snapshot.exists) {
@@ -83,76 +66,81 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         setState(() {
           _nameController.text = data['name'] ?? '';
           _emailController.text = data['email'] ?? '';
-          _imageUrl = data['imageurl'] ?? ''; // Fetch image URL
+          _imageUrl = data['imageurl'] ?? '';
         });
       }
     }
   }
 
+  // Pick an image from gallery
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       setState(() {
-        _imageFile = File(image.path); // Set the selected image
+        _imageFile = File(image.path);
       });
     }
   }
 
+  // Upload image to Firebase Storage
   Future<String?> _uploadImage() async {
     if (_imageFile != null) {
       try {
-        // Create a reference to the location you want to upload to in Firebase Storage
         Reference ref =
             _storage.ref().child('user_images/${_auth.currentUser!.uid}.jpg');
-        await ref.putFile(_imageFile!); // Upload the file
-
-        // Get the download URL
+        await ref.putFile(_imageFile!);
         String downloadUrl = await ref.getDownloadURL();
-        return downloadUrl; // Return the download URL
+        return downloadUrl;
       } catch (e) {
         print("Error uploading image: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error uploading image. Please try again.')),
+        );
       }
     }
-    return null; // Return null if no image was selected
+    return null;
   }
 
+  // Save profile data to Firestore and update FirebaseAuth user email
   Future<void> _saveProfile() async {
+    setState(() {
+      _isLoading = true; // Show loading indicator
+    });
+
     User? user = _auth.currentUser;
     if (user != null) {
       try {
         String? imageUrl;
-        // Upload image if a new one is selected
         if (_imageFile != null) {
-          imageUrl = await _uploadImage(); // Get the new image URL
+          imageUrl = await _uploadImage();
         } else {
-          imageUrl = _imageUrl; // Use existing image URL if no new image
+          imageUrl = _imageUrl;
         }
 
-        await _firestore.collection('users').doc(user.email).update({
-          'name': _nameController.text,
-          'email': _emailController.text,
-          'imageurl': imageUrl, // Update image URL
-        });
+        // Check if email is changed
+        if (_emailController.text != user.email) {
+          // Send verification email if email is changed
+          await user.updateEmail(_emailController.text);
+          await user.sendEmailVerification();
 
-        // Update user email in Firebase Authentication
-        await user.updateEmail(_emailController.text);
+          // Inform the user to verify email
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'Verification email sent! Please check your inbox to verify your email.'),
+            ),
+          );
 
-        // Optionally update the display name
-        await user.updateProfile(displayName: _nameController.text);
-
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile updated successfully!')),
-        );
-
-        // Show the local notification
-        _showNotification('Profile Updated',
-            'Your profile details have been updated successfully!');
-
-        Navigator.pop(context); // Navigate back after saving
+          // Wait for email verification
+          await _waitForEmailVerification(user);
+        } else {
+          // If email is not changed, directly update name and image
+          await _updateProfile(user, imageUrl);
+          _showProfileUpdatedNotification(context);
+          Navigator.pop(context);
+        }
       } on FirebaseAuthException catch (e) {
-        // Handle errors related to authentication
         print("Firebase Auth Error: $e");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -160,14 +148,44 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                   Text('Failed to update email. Please check the format.')),
         );
       } catch (e) {
-        // Handle general errors
         print("Error updating profile: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('Failed to update profile. Please try again.')),
+          SnackBar(content: Text('Error updating profile. Please try again.')),
         );
       }
     }
+
+    setState(() {
+      _isLoading = false; // Hide loading indicator
+    });
+  }
+
+  // Wait for email verification
+  Future<void> _waitForEmailVerification(User user) async {
+    bool emailVerified = user.emailVerified;
+
+    // Poll for email verification status
+    while (!emailVerified) {
+      await Future.delayed(Duration(seconds: 2)); // Wait for 2 seconds
+      await user.reload(); // Reload user data
+      emailVerified = user.emailVerified;
+    }
+
+    // Once email is verified, update profile details
+    await _updateProfile(user, _imageUrl);
+    Navigator.pop(context);
+  }
+
+  // Helper method to update name and image
+  Future<void> _updateProfile(User user, String? imageUrl) async {
+    await _firestore.collection('users').doc(user.email).update({
+      'name': _nameController.text,
+      'email': _emailController.text,
+      'imageurl': imageUrl,
+    });
+
+    // Also update the FirebaseAuth user's displayName
+    await user.updateProfile(displayName: _nameController.text);
   }
 
   @override
@@ -182,7 +200,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context); // Go back to the previous screen
+            Navigator.pop(context);
           },
         ),
       ),
@@ -192,14 +210,14 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 140, // Increased height for the circular avatar
-              width: 140, // Increased width for the circular avatar
+              height: 140,
+              width: 140,
               child: Stack(
                 clipBehavior: Clip.none,
                 fit: StackFit.expand,
                 children: [
                   CircleAvatar(
-                    radius: 70, // Increase the radius for the avatar
+                    radius: 70,
                     backgroundImage: _imageFile != null
                         ? FileImage(_imageFile!)
                         : _imageUrl != null && _imageUrl!.isNotEmpty
@@ -241,6 +259,8 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Enter your name',
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 12, vertical: 16),
               ),
             ),
             const SizedBox(height: 20),
@@ -250,25 +270,31 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
             ),
             TextField(
               controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Enter your email',
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 12, vertical: 16),
               ),
             ),
-            const SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: _saveProfile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: mainColor,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                ),
-                child: Text(
-                  'Save Changes',
-                  style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),
-                ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: _saveProfile,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: mainColor,
+                padding: EdgeInsets.symmetric(vertical: 16),
               ),
+              child: _isLoading
+                  ? CircularProgressIndicator(
+                      color: Colors.white,
+                    )
+                  : Text(
+                      'Update Profile',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
             ),
           ],
         ),

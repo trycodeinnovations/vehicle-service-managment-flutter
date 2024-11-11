@@ -1,4 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
 import 'package:flutter_car_service/Api_integration/ProfileGet.dart';
@@ -243,9 +245,24 @@ class _HomePageState extends State<HomePage> {
 }
 
 SizedBox lastServiceList() {
+  // Get current user's email (assuming FirebaseAuth is used)
+  String currentUserEmail = FirebaseAuth.instance.currentUser?.email ?? '';
+
   // Check if servicedata is null or empty
-  if (servicedata.isEmpty) {
+  if (servicedata.isEmpty || currentUserEmail.isEmpty) {
     return SizedBox(); // Return nothing (an empty widget)
+  }
+
+  // Filter the servicedata based on the current user's email
+  List<dynamic> userServices = servicedata.where((service) {
+    String serviceEmail =
+        service['email']; // Assuming the email field exists in your data
+    return serviceEmail == currentUserEmail;
+  }).toList();
+
+  // If no services found for the user, return an empty widget
+  if (userServices.isEmpty) {
+    return SizedBox();
   }
 
   return SizedBox(
@@ -253,20 +270,16 @@ SizedBox lastServiceList() {
     child: ListView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.horizontal,
-      itemCount: servicedata.length,
+      itemCount: userServices.length,
       itemBuilder: (context, index) {
-        if (index >= servicedata.length) {
-          return Container(); // Graceful handling for out of range
-        }
-
-        // Retrieve data from servicedata with null checks
-        String status = servicedata[index]['status'] ?? 'unknown';
-        String paymentStatus = servicedata[index]['payment'] ?? 'notdone';
+        // Retrieve data for the current service
+        String status = userServices[index]['status'] ?? 'unknown';
+        String paymentStatus = userServices[index]['payment'] ?? 'notdone';
         String selectedDate =
-            servicedata[index]['selectedDate']?.toString() ?? '';
-        String selectedTimeSlot = servicedata[index]['selectedTimeSlot'] ?? '';
+            userServices[index]['selectedDate']?.toString() ?? '';
+        String selectedTimeSlot = userServices[index]['selectedTimeSlot'] ?? '';
         List<dynamic> selectedService =
-            servicedata[index]["selectedService"] ?? [];
+            userServices[index]["selectedService"] ?? [];
 
         String serviceTitle = selectedService.isNotEmpty
             ? '${selectedService[0]['title'] ?? ''}${selectedService.length > 1 ? '...' : ''}'
@@ -406,7 +419,7 @@ SizedBox lastServiceList() {
                     } else {
                       // Call the bottom sheet function with the current service data
                       showServiceRequestDetailsBottomSheet(
-                          context, servicedata[index]);
+                          context, userServices[index]);
                     }
                   },
                   child: Container(
@@ -592,6 +605,15 @@ class ProfileContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the current user's email from Firebase Authentication
+    String? currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+
+    if (currentUserEmail == null) {
+      return Center(
+        child: Text('User not logged in'),
+      );
+    }
+
     return InkWell(
       onTap: () {
         // Navigator.push(
@@ -604,7 +626,7 @@ class ProfileContainer extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: subText.withOpacity(0.1),
+              color: Colors.grey.withOpacity(0.1),
               spreadRadius: 5,
               blurRadius: 7,
               offset: const Offset(0, 3),
@@ -616,41 +638,85 @@ class ProfileContainer extends StatelessWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 25,
-                  backgroundImage: NetworkImage(
-                    currentlogindata['imageurl'] ??
-                        'https://example.com/default_image.png', // Default image URL if none
-                  ),
-                ),
-                const SizedBox(width: 15),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      currentlogindata['name'] ??
-                          'No Name', // Default text if name is missing
-                      style: GoogleFonts.poppins(
-                        color: mainColor,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Text(
-                      "Premium Customer",
-                      style: GoogleFonts.poppins(
-                        color: subText,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
+                // StreamBuilder for fetching user data from Firestore
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection(
+                          'users') // Replace 'users' with your collection name
+                      .where('email', isEqualTo: currentUserEmail)
+                      .limit(1) // Fetch only one document
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircleAvatar(
+                        radius: 25,
+                        backgroundColor: Colors.grey,
+                        child:
+                            CircularProgressIndicator(), // Loading indicator in avatar
+                      );
+                    }
+
+                    if (snapshot.hasError) {
+                      return CircleAvatar(
+                        radius: 25,
+                        backgroundColor: Colors.red,
+                        child: Icon(Icons.error, color: Colors.white),
+                      );
+                    }
+
+                    // Check if data is available
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return CircleAvatar(
+                        radius: 25,
+                        backgroundImage: NetworkImage(
+                            'https://example.com/default_image.png'), // Default image
+                      );
+                    }
+
+                    // Get user document
+                    var userDoc = snapshot.data?.docs.first;
+                    String userName = userDoc?['name'] ?? 'No Name';
+                    String imageUrl = userDoc?['imageurl'] ??
+                        'https://example.com/default_image.png'; // Default image if not found
+
+                    return Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 25,
+                          backgroundImage: NetworkImage(
+                              imageUrl), // Fetch image from Firestore
+                        ),
+                        const SizedBox(width: 15),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              userName,
+                              style: GoogleFonts.poppins(
+                                color: Colors.black,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              "Premium Customer",
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
             Icon(
               Icons.notifications_outlined,
-              color: mainColor,
+              color: Colors.black,
               size: 30,
             ),
           ],

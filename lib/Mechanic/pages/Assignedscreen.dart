@@ -62,7 +62,7 @@ class _AssignedTasksScreenState extends State<AssignedTasksScreen> {
       body: Container(
         padding: EdgeInsets.all(16),
         child: tasks.isEmpty
-            ? Center(child: CircularProgressIndicator())
+            ? Center(child: Text("No active requests"))
             : ListView.builder(
                 itemCount: tasks.length,
                 itemBuilder: (context, index) {
@@ -184,13 +184,14 @@ class _AssignedTasksScreenState extends State<AssignedTasksScreen> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => TaskDetailsScreen(
-                                  userImage: userImage,
-                                  userName: userName,
-                                  email: email,
-                                  date: date,
-                                  timeSlot: timeSlot,
-                                  phoneNumber: phoneNumber,
-                                  userissue: userissue,)));
+                                    userImage: userImage,
+                                    userName: userName,
+                                    email: email,
+                                    date: date,
+                                    timeSlot: timeSlot,
+                                    phoneNumber: phoneNumber,
+                                    userissue: userissue,
+                                  )));
                     },
                     icon: Icon(Icons.arrow_forward_ios, size: 15))),
           ],

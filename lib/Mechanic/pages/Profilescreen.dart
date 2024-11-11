@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
 import 'package:flutter_car_service/Mechanic/pages/profileupdate.dart';
+import 'package:flutter_car_service/style/color.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MechanicProfile extends StatelessWidget {
@@ -168,9 +169,7 @@ class MechanicProfile extends StatelessWidget {
       child: Text(
         "Update Profile",
         style: GoogleFonts.poppins(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
+            fontSize: 16, fontWeight: FontWeight.w600, color: mainColor),
       ),
     );
   }
