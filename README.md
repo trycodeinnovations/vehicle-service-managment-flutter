@@ -1,6 +1,12 @@
 # flutter_car_service
 
 A new Flutter project.
+## Screenshots
+
+![App Screenshot](assets\screenshots\home.jpg)
+![App Screenshot](assets\screenshots\login.jpg)
+![App Screenshot](assets\screenshots\splash.jpg)
+
 
 ## Getting Started
 
