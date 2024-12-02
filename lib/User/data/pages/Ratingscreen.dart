@@ -3,6 +3,8 @@ import 'package:flutter_car_service/style/color.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppRatingPage extends StatefulWidget {
+  const AppRatingPage({super.key});
+
   @override
   _AppRatingPageState createState() => _AppRatingPageState();
 }

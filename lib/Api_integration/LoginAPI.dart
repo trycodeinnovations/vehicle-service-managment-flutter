@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Api_integration/ProfileGet.dart';
-import 'package:flutter_car_service/User/component/bottom_nav.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> Login(context, email, pass) async {
@@ -98,6 +96,7 @@ Future<String?> getlogintypes(String email) async {
   } catch (e) {
     print(e);
   }
+  return null;
 }
 
 Map<String, dynamic> currentlogindata = {};

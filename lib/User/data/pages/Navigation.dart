@@ -3,7 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class Navigation extends StatelessWidget {
-  const Navigation({Key? key}) : super(key: key);
+  const Navigation({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class Navigation extends StatelessWidget {
               ),
               SizedBox(height: 20),
               // Display the garage SVG image
-              Container(
+              SizedBox(
                 width: 150, // Adjust width to make it smaller
                 height: 150, // Adjust height to make it smaller
                 child: SvgPicture.asset(

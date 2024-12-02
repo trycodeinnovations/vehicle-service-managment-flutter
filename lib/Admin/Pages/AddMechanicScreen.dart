@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddMechanicScreen extends StatefulWidget {
+  const AddMechanicScreen({super.key});
+
   @override
   _AddMechanicScreenState createState() => _AddMechanicScreenState();
 }
@@ -102,6 +104,11 @@ class _AddMechanicScreenState extends State<AddMechanicScreen> {
                     _clearForm(); // Clear fields after submission
                   }
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueGrey[800],
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 11),
+                ),
                 child: Text(
                   'Register Mechanic',
                   style: GoogleFonts.poppins(
@@ -109,11 +116,6 @@ class _AddMechanicScreenState extends State<AddMechanicScreen> {
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueGrey[800],
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 11),
                 ),
               ),
             ],

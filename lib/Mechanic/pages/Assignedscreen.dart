@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
@@ -7,6 +6,8 @@ import 'package:icons_plus/icons_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AssignedTasksScreen extends StatefulWidget {
+  const AssignedTasksScreen({super.key});
+
   @override
   _AssignedTasksScreenState createState() => _AssignedTasksScreenState();
 }

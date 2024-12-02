@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_car_service/Api_integration/ServicedetailsGet.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SubmissionScreen extends StatelessWidget {
@@ -8,7 +7,7 @@ class SubmissionScreen extends StatelessWidget {
   final bool isPickupSelected;
   final String pickupAddress;
 
-  SubmissionScreen({
+  const SubmissionScreen({super.key, 
     required this.servicedata,
     this.selectedDate,
     this.isPickupSelected = false,
@@ -78,7 +77,7 @@ class SubmissionScreen extends StatelessWidget {
                             'No Service Selected',
                         style: GoogleFonts.poppins(fontSize: 14),
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),

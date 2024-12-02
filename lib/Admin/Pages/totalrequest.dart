@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class RequestsScreen extends StatelessWidget {
-  const RequestsScreen({Key? key}) : super(key: key);
+  const RequestsScreen({super.key});
 
   Future<List<Map<String, dynamic>>> _getRequestsByStatus(String status) async {
     // Fetch requests from Firebase Firestore based on their status

@@ -2,14 +2,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
 import 'package:flutter_car_service/Api_integration/ProfileGet.dart';
 import 'package:flutter_car_service/Api_integration/ServicedetailsGet.dart';
-import 'package:flutter_car_service/Mechanic/pages/live.dart';
 import 'package:flutter_car_service/constants/dayGeting.dart';
 import 'package:flutter_car_service/User/data/articles_data.dart';
 import 'package:flutter_car_service/User/data/last_service.dart';
-import 'package:flutter_car_service/User/data/pages/Review.dart';
 import 'package:flutter_car_service/User/data/service.dart';
 import 'package:flutter_car_service/User/data/pages/Fullservivedetail.dart';
 import 'package:flutter_car_service/User/data/pages/Oilservicedetailscreen.dart';
@@ -464,9 +461,9 @@ class ServiceRequestDetailsBottomSheet extends StatelessWidget {
   final Map<String, dynamic> servicedata;
 
   const ServiceRequestDetailsBottomSheet({
-    Key? key,
+    super.key,
     required this.servicedata,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -600,8 +597,8 @@ Widget _buildRow(String label, String value, double screenWidth) {
 
 class ProfileContainer extends StatelessWidget {
   const ProfileContainer({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

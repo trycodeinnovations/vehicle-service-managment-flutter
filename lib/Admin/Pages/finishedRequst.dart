@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class FinishedRequestsScreen extends StatelessWidget {
-  const FinishedRequestsScreen({Key? key}) : super(key: key);
+  const FinishedRequestsScreen({super.key});
 
   Future<List<Map<String, dynamic>>> _getFinishedRequests() async {
     // Fetch finished requests from Firebase Firestore

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ServiceRequestProvider with ChangeNotifier {
-  List<Map<String, String>> _serviceRequests = [
+  final List<Map<String, String>> _serviceRequests = [
     {"service": "Oil Change", "status": "Pending"},
     {"service": "AC Repair", "status": "Completed"},
   ];

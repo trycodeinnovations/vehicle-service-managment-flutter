@@ -12,7 +12,7 @@ class TaskDetailsScreen extends StatefulWidget {
   final String phoneNumber;
   final String userissue;
   const TaskDetailsScreen({
-    Key? key,
+    super.key,
     required this.userImage,
     required this.userName,
     required this.email,
@@ -20,7 +20,7 @@ class TaskDetailsScreen extends StatefulWidget {
     required this.timeSlot,
     required this.phoneNumber,
     required this.userissue,
-  }) : super(key: key);
+  });
 
   @override
   _TaskDetailsScreenState createState() => _TaskDetailsScreenState();

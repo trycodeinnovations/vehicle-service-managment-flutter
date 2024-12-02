@@ -4,19 +4,14 @@ import 'package:flutter_car_service/Admin/Pages/CategoriesAdd.dart';
 import 'package:flutter_car_service/Admin/Pages/TotalMechanics.dart';
 import 'package:flutter_car_service/Admin/Pages/ServiceRequestScreen.dart';
 
-import 'package:flutter_car_service/Admin/Pages/finishedRequst.dart';
 import 'package:flutter_car_service/Admin/Pages/totalrequest.dart';
-import 'package:flutter_car_service/Api_integration/AdminServiceFet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
-import 'package:flutter_car_service/Api_integration/TotalMechanicApi.dart';
-import 'package:flutter_car_service/style/color.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminDashboard extends StatefulWidget {
-  AdminDashboard({Key? key, required this.title, required this.mainColor})
-      : super(key: key);
+  const AdminDashboard({super.key, required this.title, required this.mainColor});
 
   final String title;
   final Color mainColor;

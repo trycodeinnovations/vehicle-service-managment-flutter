@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
 
 class CompletedTasksScreen extends StatelessWidget {
+  const CompletedTasksScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;

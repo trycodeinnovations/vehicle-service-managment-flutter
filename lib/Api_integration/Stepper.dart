@@ -11,6 +11,8 @@ import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 class RequestStatusStepper extends StatefulWidget {
+  const RequestStatusStepper({super.key});
+
   @override
   _RequestStatusStepperState createState() => _RequestStatusStepperState();
 }

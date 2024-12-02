@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RatingsAndReviews extends StatelessWidget {
-  RatingsAndReviews({Key? key}) : super(key: key);
+  RatingsAndReviews({super.key});
 
   final Color mainColor = const Color(0xff172D48); // Your app's main color
   final Color subTextColor =

@@ -8,7 +8,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 Future<void> Register(
-    BuildContext context, email, password, data, _image) async {
+    BuildContext context, email, password, data, image) async {
   try {
     UserCredential cred = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
@@ -18,7 +18,7 @@ Future<void> Register(
           .ref()
           .child("user_images")
           .child("${cred.user!.uid}.jpg");
-      await StorageRef.putFile(_image!);
+      await StorageRef.putFile(image!);
       print('img stored');
       final imageurl = await StorageRef.getDownloadURL();
       data["imageurl"] = imageurl;

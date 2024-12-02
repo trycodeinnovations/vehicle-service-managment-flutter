@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_car_service/constants/dayGeting.dart';
 
 class ServiceDetailsScreen extends StatefulWidget {
-  ServiceDetailsScreen({super.key, required this.all});
+  const ServiceDetailsScreen({super.key, required this.all});
   final all;
 
   @override
@@ -51,7 +51,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
 class _ServiceDetailCard extends StatefulWidget {
   final service;
 
-  _ServiceDetailCard({required this.service});
+  const _ServiceDetailCard({required this.service});
 
   @override
   __ServiceDetailCardState createState() => __ServiceDetailCardState();
@@ -210,17 +210,17 @@ class __ServiceDetailCardState extends State<_ServiceDetailCard> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: isLoading ? null : _updateServiceStatus,
-              child: isLoading
-                  ? CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    )
-                  : Text('Assign Mechanic', style: GoogleFonts.poppins()),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blueGrey[800],
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
               ),
+              child: isLoading
+                  ? CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    )
+                  : Text('Assign Mechanic', style: GoogleFonts.poppins()),
             ),
             SizedBox(height: 20),
             if (_selectedMechanic != null)

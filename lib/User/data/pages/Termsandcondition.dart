@@ -4,7 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 class TermsAndConditionsPage extends StatelessWidget {
   // Define your mainColor here or use your app's theme
   final Color mainColor =
-      const Color(0xff172D48); // Replace with your desired color
+      const Color(0xff172D48);
+
+  const TermsAndConditionsPage({super.key}); // Replace with your desired color
 
   @override
   Widget build(BuildContext context) {
@@ -66,13 +68,13 @@ class TermsAndConditionsPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the page
                 },
-                child: Text(
-                  'Accept',
-                  style: TextStyle(color: Colors.white),
-                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: mainColor, // Use mainColor
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                ),
+                child: Text(
+                  'Accept',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -83,13 +85,13 @@ class TermsAndConditionsPage extends StatelessWidget {
                   Navigator.of(context)
                       .pop(); // Close the page or navigate back
                 },
-                child: Text(
-                  'Decline',
-                  style: TextStyle(color: Colors.white),
-                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.redAccent,
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                ),
+                child: Text(
+                  'Decline',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),

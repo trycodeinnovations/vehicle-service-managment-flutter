@@ -1,14 +1,10 @@
-import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_car_service/Api_integration/ProfileGet.dart';
 import 'package:flutter_car_service/Api_integration/RequestData.dart';
 import 'package:flutter_car_service/Api_integration/ServicedetailsGet.dart';
-import 'package:flutter_car_service/Api_integration/Stepper.dart';
 import 'package:flutter_car_service/User/data/pages/Termsandcondition.dart';
-import 'package:flutter_car_service/User/data/pages/submissionscreen.dart';
 import 'package:flutter_car_service/User/data/service.dart';
 import 'package:flutter_car_service/main.dart';
 import 'package:flutter_car_service/models/service_models.dart';

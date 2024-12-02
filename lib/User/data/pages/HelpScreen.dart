@@ -7,12 +7,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class HelpScreen extends StatefulWidget {
+  const HelpScreen({super.key});
+
   @override
   _HelpScreenState createState() => _HelpScreenState();
 }
 
 class _HelpScreenState extends State<HelpScreen> {
-  TextEditingController _issueController = TextEditingController();
+  final TextEditingController _issueController = TextEditingController();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   bool hasSubmittedTicket = false;

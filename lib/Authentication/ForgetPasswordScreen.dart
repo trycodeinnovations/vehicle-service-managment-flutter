@@ -8,7 +8,7 @@ import 'package:quickalert/quickalert.dart'; // Import QuickAlert
 // Adjust the import to your SignIn screen
 
 class ForgotPassword extends StatefulWidget {
-  const ForgotPassword({Key? key}) : super(key: key);
+  const ForgotPassword({super.key});
 
   @override
   State<ForgotPassword> createState() => _ForgotPasswordState();

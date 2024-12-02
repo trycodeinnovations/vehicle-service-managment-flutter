@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Chatbot extends StatefulWidget {
+  const Chatbot({super.key});
+
   @override
   _ChatbotState createState() => _ChatbotState();
 }
 
 class _ChatbotState extends State<Chatbot> {
   final TextEditingController _controller = TextEditingController();
-  List<Map<String, String>> _messages = [];
+  final List<Map<String, String>> _messages = [];
 
   @override
   void initState() {

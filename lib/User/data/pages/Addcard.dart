@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AddNewCardScreen extends StatefulWidget {
+  const AddNewCardScreen({super.key});
+
   @override
   _AddNewCardScreenState createState() => _AddNewCardScreenState();
 }
@@ -111,12 +113,12 @@ class _AddNewCardScreenState extends State<AddNewCardScreen> {
                 onPressed: () {
                   _addCard();
                 },
-                child: Text('Add', style: GoogleFonts.roboto()),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   padding: EdgeInsets.symmetric(vertical: 16),
                   minimumSize: Size(double.infinity, 0),
                 ),
+                child: Text('Add', style: GoogleFonts.roboto()),
               ),
             ],
           ),

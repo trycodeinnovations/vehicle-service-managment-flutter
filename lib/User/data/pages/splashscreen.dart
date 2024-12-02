@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_car_service/Admin/Pages/Adminhomepage.dart';
-import 'package:flutter_car_service/Mechanic/component/bottomnav.dart';
-import 'package:flutter_car_service/User/component/bottom_nav.dart';
 
 import 'package:flutter_car_service/User/data/pages/get_started.dart';
 import 'package:flutter_car_service/style/color.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

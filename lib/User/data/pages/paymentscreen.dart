@@ -12,7 +12,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 class PaymentMethodScreen extends StatefulWidget {
   final double cost; // Add the cost parameter to the constructor
 
-  PaymentMethodScreen({required this.cost}); // Constructor to receive the cost
+  const PaymentMethodScreen({super.key, required this.cost}); // Constructor to receive the cost
 
   @override
   _PaymentMethodScreenState createState() => _PaymentMethodScreenState();
@@ -294,13 +294,12 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 ),
               ),
             ),
-            if (widget.cost != null)
-              Text(
-                'Subtotal: ₹${widget.cost.toStringAsFixed(2)}',
-                style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
-              ),
+            Text(
+              'Subtotal: ₹${widget.cost.toStringAsFixed(2)}',
+              style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+            ),
             SizedBox(height: 8),
-            Container(
+            SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {

@@ -3,6 +3,8 @@ import 'package:flutter_car_service/style/color.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class VehicleFullServiceDetailPage extends StatelessWidget {
+  const VehicleFullServiceDetailPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

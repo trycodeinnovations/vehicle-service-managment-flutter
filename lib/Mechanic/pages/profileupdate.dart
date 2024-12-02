@@ -10,6 +10,8 @@ import 'package:flutter_svg/flutter_svg.dart'; // For SVG support
 import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore integration
 
 class UpdateProfileScreen extends StatefulWidget {
+  const UpdateProfileScreen({super.key});
+
   @override
   _UpdateProfileScreenState createState() => _UpdateProfileScreenState();
 }

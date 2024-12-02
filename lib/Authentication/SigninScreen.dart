@@ -1,22 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Api_integration/Googlelogin.dart';
 import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
-import 'package:flutter_car_service/Api_integration/ProfileGet.dart';
 import 'package:flutter_car_service/Api_integration/ServicedetailsGet.dart';
-import 'package:flutter_car_service/Api_integration/ushNotification.dart';
-import 'package:flutter_car_service/Authentication/Constants.dart';
 import 'package:flutter_car_service/Authentication/ForgetPasswordScreen.dart';
 import 'package:flutter_car_service/Authentication/SignUpScreen.dart';
-import 'package:flutter_car_service/Mechanic/component/bottomnav.dart';
 import 'package:flutter_car_service/User/Widgets/customScafold.dart';
 
 import 'package:flutter_car_service/User/component/bottom_nav.dart';
-import 'package:flutter_car_service/User/data/pages/get_started.dart';
-import 'package:flutter_car_service/User/data/pages/home_pages.dart';
 import 'package:flutter_car_service/style/color.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});

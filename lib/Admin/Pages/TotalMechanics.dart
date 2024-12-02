@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MechanicProfileScreen extends StatefulWidget {
+  const MechanicProfileScreen({super.key});
+
   @override
   _MechanicProfileScreenState createState() => _MechanicProfileScreenState();
 }
@@ -23,7 +25,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
       var snapshot = await collection.get();
       setState(() {
         mechanicdata = snapshot.docs
-            .map((doc) => doc.data() as Map<String, dynamic>)
+            .map((doc) => doc.data())
             .toList();
         isLoading = false; // Data loaded
       });
@@ -197,16 +199,14 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
 
   Future<void> _deleteMechanic(String email) async {
     try {
-      if (email != null) {
-        var collection = FirebaseFirestore.instance.collection('mechanics');
-        var snapshot = await collection.where('email', isEqualTo: email).get();
+      var collection = FirebaseFirestore.instance.collection('mechanics');
+      var snapshot = await collection.where('email', isEqualTo: email).get();
 
-        for (var doc in snapshot.docs) {
-          await doc.reference
-              .delete(); // Delete the document(s) with the matching email
-        }
+      for (var doc in snapshot.docs) {
+        await doc.reference
+            .delete(); // Delete the document(s) with the matching email
       }
-    } catch (e) {
+        } catch (e) {
       print('Error deleting mechanic: $e'); // Log error
     }
   }

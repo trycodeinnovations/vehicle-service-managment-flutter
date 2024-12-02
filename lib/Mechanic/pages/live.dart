@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_car_service/style/color.dart';
 
 class ServiceRequestDetailsBottomSheet extends StatelessWidget {
   final Map<String, dynamic> servicedata;
 
   const ServiceRequestDetailsBottomSheet({
-    Key? key,
+    super.key,
     required this.servicedata,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

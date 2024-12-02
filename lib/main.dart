@@ -1,5 +1,4 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -7,10 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_car_service/Api_integration/Stepper.dart';
 import 'package:flutter_car_service/Authentication/SigninScreen.dart';
 import 'package:flutter_car_service/Mechanic/component/bottomnav.dart';
-import 'package:flutter_car_service/Mechanic/pages/FullTaskDetails.dart';
-import 'package:flutter_car_service/Mechanic/pages/live.dart';
 import 'package:flutter_car_service/User/data/pages/home_pages.dart';
-import 'package:flutter_car_service/User/data/pages/paymentscreen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'firebase_options.dart';
@@ -19,8 +15,6 @@ import 'package:provider/provider.dart';
 import 'Provider/ServiceHistoryProvider.dart';
 import 'Admin/Pages/AddMechanicScreen.dart';
 import 'Admin/Pages/Adminhomepage.dart';
-import 'Admin/Pages/ServiceDetails.dart';
-import 'Mechanic/pages/Homepage.dart';
 
 import 'User/component/bottom_nav.dart';
 import 'User/data/pages/splashscreen.dart';

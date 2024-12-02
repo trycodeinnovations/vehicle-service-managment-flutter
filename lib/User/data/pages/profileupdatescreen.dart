@@ -11,6 +11,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class ProfileUpdateScreen extends StatefulWidget {
+  const ProfileUpdateScreen({super.key});
+
   @override
   _ProfileUpdateScreenState createState() => _ProfileUpdateScreenState();
 }
@@ -74,8 +76,8 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
   // Pick an image from gallery
   Future<void> _pickImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       setState(() {
         _imageFile = File(image.path);

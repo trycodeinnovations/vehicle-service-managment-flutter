@@ -6,6 +6,8 @@ import 'package:flutter_car_service/Mechanic/pages/Profilescreen.dart';
 import 'package:flutter_car_service/style/color.dart';
 
 class BotomMechanic extends StatefulWidget {
+  const BotomMechanic({super.key});
+
   @override
   _BotomMechanicState createState() => _BotomMechanicState();
 }

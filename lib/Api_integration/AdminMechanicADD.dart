@@ -8,7 +8,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 Future<void> MechanicReg(BuildContext context, String email, String password,
-    Map<String, dynamic> data, _image) async {
+    Map<String, dynamic> data, image) async {
   try {
     UserCredential cred = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
@@ -18,7 +18,7 @@ Future<void> MechanicReg(BuildContext context, String email, String password,
           .ref()
           .child("mechanic_images")
           .child("${cred.user!.uid}.jpg");
-      await StorageRef.putFile(_image!);
+      await StorageRef.putFile(image!);
       print('Image stored');
 
       final imageurl = await StorageRef.getDownloadURL();

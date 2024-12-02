@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/Admin/Pages/Adminhomepage.dart';
 import 'package:flutter_car_service/style/color.dart';
-import 'package:flutter_car_service/User/data/pages/ProfileScreen.dart';
-import 'package:flutter_car_service/User/data/pages/home_pages.dart';
-import 'package:flutter_car_service/User/data/pages/service_form.dart';
 
 class BottomNavScreen extends StatefulWidget {
+  const BottomNavScreen({super.key});
+
   @override
   _BottomNavScreenState createState() => _BottomNavScreenState();
 }

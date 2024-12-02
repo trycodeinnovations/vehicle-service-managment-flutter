@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 
 class ServiceRequestScreen extends StatefulWidget {
+  const ServiceRequestScreen({super.key});
+
   @override
   _ServiceRequestScreenState createState() => _ServiceRequestScreenState();
 }
@@ -50,7 +52,7 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
         },
         onValueChanged: (value) {
           setState(() {
-            _selectedIndex = value!;
+            _selectedIndex = value;
           });
         },
         initialValue: _selectedIndex,
@@ -221,7 +223,7 @@ class _ServiceRequestScreenState extends State<ServiceRequestScreen> {
                               ServiceDetailsScreen(all: alldata),
                         ));
                   },
-                  child: Container(
+                  child: SizedBox(
                     height: 40,
                     child: ListView.builder(
                       itemBuilder: (context, index) => ListTile(

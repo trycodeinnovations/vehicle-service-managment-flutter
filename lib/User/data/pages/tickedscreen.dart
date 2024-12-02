@@ -7,7 +7,7 @@ class TicketDetailsScreen extends StatelessWidget {
   final String ticketId;
   final Color mainColorr = mainColor; // Set your primary color here
 
-  TicketDetailsScreen({required this.ticketId});
+  TicketDetailsScreen({super.key, required this.ticketId});
 
   @override
   Widget build(BuildContext context) {

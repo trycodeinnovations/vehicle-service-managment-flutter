@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_car_service/style/color.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class UserTicketsScreen extends StatefulWidget {
+  const UserTicketsScreen({super.key});
+
   @override
   _UserTicketsScreenState createState() => _UserTicketsScreenState();
 }
@@ -92,8 +93,8 @@ class _UserTicketsScreenState extends State<UserTicketsScreen> {
   }
 
   Future<void> _showReplyDialog(Map<String, dynamic> ticket) async {
-    TextEditingController _replyController = TextEditingController();
-    bool _isSubmitting = false;
+    TextEditingController replyController = TextEditingController();
+    bool isSubmitting = false;
 
     showDialog(
       context: context,
@@ -110,7 +111,7 @@ class _UserTicketsScreenState extends State<UserTicketsScreen> {
                   Text('Issue: ${ticket['description']}'),
                   SizedBox(height: 10),
                   TextField(
-                    controller: _replyController,
+                    controller: replyController,
                     decoration: InputDecoration(
                       hintText: 'Enter reply...',
                       border: OutlineInputBorder(),
@@ -120,18 +121,18 @@ class _UserTicketsScreenState extends State<UserTicketsScreen> {
                 ],
               ),
               actions: [
-                _isSubmitting
+                isSubmitting
                     ? CircularProgressIndicator()
                     : ElevatedButton(
                         onPressed: () async {
-                          if (_replyController.text.isEmpty) {
+                          if (replyController.text.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text('Please enter a reply')));
                             return;
                           }
 
                           setState(() {
-                            _isSubmitting = true;
+                            isSubmitting = true;
                           });
 
                           try {
@@ -145,7 +146,7 @@ class _UserTicketsScreenState extends State<UserTicketsScreen> {
                               for (var doc in querySnapshot.docs) {
                                 doc.reference.update({
                                   'status': 'closed',
-                                  'admin_reply': _replyController.text,
+                                  'admin_reply': replyController.text,
                                   'closed_at': FieldValue.serverTimestamp(),
                                 });
                               }
@@ -163,7 +164,7 @@ class _UserTicketsScreenState extends State<UserTicketsScreen> {
                                 SnackBar(content: Text('Error: $e')));
                           } finally {
                             setState(() {
-                              _isSubmitting = false;
+                              isSubmitting = false;
                             });
                           }
                         },
@@ -183,7 +184,7 @@ class TicketCard extends StatelessWidget {
   final Map<String, dynamic> ticket;
   final VoidCallback onReply;
 
-  TicketCard({required this.ticket, required this.onReply});
+  const TicketCard({super.key, required this.ticket, required this.onReply});
 
   @override
   Widget build(BuildContext context) {
@@ -218,8 +219,8 @@ class TicketCard extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: onReply,
-              child: Text('Reply & Close Ticket'),
               style: ElevatedButton.styleFrom(backgroundColor: mainColor),
+              child: Text('Reply & Close Ticket'),
             ),
           ],
         ),

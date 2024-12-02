@@ -24,26 +24,22 @@ Future<void> AdminServiceDataGet() async {
         Map<String, dynamic>? data = document.data();
 
         // Check if data is not null
-        if (data != null) {
-          // Extract the service details from the document
-          Map<String, dynamic> serviceData = {
-            'isPickupSelected': data['isPickupSelected'],
-            'pickupAddress': data['pickupAddress'],
-            'selectedDate': data['selectedDate'],
-            'selectedDeliveryType': data['selectedDeliveryType'],
-            'selectedService': data['selectedService'],
-            'selectedTimeSlot': data['selectedTimeSlot'],
-            "userissue": data['userissue'],
-          };
+        // Extract the service details from the document
+        Map<String, dynamic> serviceData = {
+          'isPickupSelected': data['isPickupSelected'],
+          'pickupAddress': data['pickupAddress'],
+          'selectedDate': data['selectedDate'],
+          'selectedDeliveryType': data['selectedDeliveryType'],
+          'selectedService': data['selectedService'],
+          'selectedTimeSlot': data['selectedTimeSlot'],
+          "userissue": data['userissue'],
+        };
 
-          // Add it to the list
-          servicedata.add(serviceData);
+        // Add it to the list
+        servicedata.add(serviceData);
 
-          print("Service data fetched: $serviceData");
-        } else {
-          print("No service data found for this user.");
-        }
-      }
+        print("Service data fetched: $serviceData");
+            }
     } else {
       print("No documents found for this user.");
     }

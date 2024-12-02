@@ -8,6 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:quickalert/quickalert.dart';
 
 class MechanicHomePage extends StatefulWidget {
+  const MechanicHomePage({super.key});
+
   @override
   _MechanicHomePageState createState() => _MechanicHomePageState();
 }
@@ -257,7 +259,7 @@ class _MechanicHomePageState extends State<MechanicHomePage> {
                 return Center(child: Text('No assigned tasks.'));
               }
 
-              return Container(
+              return SizedBox(
                 height: size.height * 0.25,
                 child: ListView.builder(
                   itemCount: snapshot.data!.docs.length,

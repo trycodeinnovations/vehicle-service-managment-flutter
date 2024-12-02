@@ -1,15 +1,11 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_car_service/Api_integration/LoginAPI.dart';
-import 'package:flutter_car_service/Api_integration/ProfileGet.dart';
 import 'package:flutter_car_service/Api_integration/Stepper.dart';
 import 'package:flutter_car_service/User/data/pages/HelpScreen.dart';
 import 'package:flutter_car_service/User/data/pages/profileupdatescreen.dart';
 import 'package:flutter_car_service/User/data/pages/Navigation.dart';
 import 'package:flutter_car_service/User/data/pages/Ratingscreen.dart';
-import 'package:flutter_car_service/User/data/pages/Review.dart';
-import 'package:flutter_car_service/User/data/pages/paymentscreen.dart';
 import 'package:flutter_car_service/style/color.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,12 +22,12 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   File? _imageFile; // To store the new image file
-  bool _isLoading = false; // Track loading state
+  final bool _isLoading = false; // Track loading state
 
   Future<void> _pickImage() async {
     try {
-      final ImagePicker _picker = ImagePicker();
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
         setState(() {
           _imageFile = File(image.path);

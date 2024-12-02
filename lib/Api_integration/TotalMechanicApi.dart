@@ -24,24 +24,20 @@ Future<void> TotalMechanics() async {
         Map<String, dynamic>? data = document.data();
 
         // Check if data is not null
-        if (data != null) {
-          // Extract the service details from the document
-          Map<String, dynamic> mechanicsProfile = {
-            'email': data['email'],
-            'experience': data['experience'],
-            'imageurl': data['imageurl'],
-            'name': data['name'],
-            'phone': data['phone'],
-          };
+        // Extract the service details from the document
+        Map<String, dynamic> mechanicsProfile = {
+          'email': data['email'],
+          'experience': data['experience'],
+          'imageurl': data['imageurl'],
+          'name': data['name'],
+          'phone': data['phone'],
+        };
 
-          // Add it to the list
-          mechanicdata.add(mechanicsProfile);
+        // Add it to the list
+        mechanicdata.add(mechanicsProfile);
 
-          print("Service data fetched: $mechanicsProfile");
-        } else {
-          print("No service data found for this user.");
-        }
-      }
+        print("Service data fetched: $mechanicsProfile");
+            }
     } else {
       print("No documents found for this user.");
     }
